@@ -1,0 +1,57 @@
+﻿@model ComunidadPractica.Models.ItemModel
+@{ ViewBag.Title = "Opciones de un Enunciado"; }
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container">
+		<div class="flex-row">
+			<div class="col-lg-6 mx-auto text-left">
+				<h1>@ViewBag.Title</h1>
+				<h4>@Model.enunciado</h4>
+				@using (Html.BeginForm("agregarOpciones", "Encuesta", null, FormMethod.Post,
+				new { style = "display: inline-block;" }))
+				{
+					<div>@ViewBag.Message</div>
+					<div class="text-danger">@ViewBag.Error</div>
+					<input type="hidden" name="encuesta" value="@ViewBag.EncuestaID">
+					<input type="hidden" name="numItem" value="@Model.numItem">
+					<br>
+					<input name="opcion" type="text" class="form-control-lg" placeholder="Opción nuevo">
+					<br><br>
+					<input type="submit" class="btn btn-dark" value="Agregar Opción" />
+					<input onclick="location.href='@Url.Action("agregarItems", new { encuesta = ViewBag.EncuestaID})'"
+						   type="button" class="btn btn-danger" value="Volver a Encuesta" />
+				}
+				<hr>
+				@if (Model.opciones.Count == 0)
+				{
+					<h5>No hay opciones todavia</h5>
+				}
+				else
+				{
+					<h5>Opciones</h5>
+				}
+				@foreach (var opcion in Model.opciones)
+				{
+					<div class="card">
+						<div class="row">
+							<div class="col-lg-10">
+								<h4>@opcion</h4>
+							</div>
+							<div class="col-lg-2">
+								@using (Html.BeginForm("eliminarOpcionDeItem", "Encuesta",
+									new { encuestaID = ViewBag.EncuestaID, itemID = Model.numItem, opcion = opcion }))
+								{
+									<input class="btn btn-danger" type="submit" value=" x " />
+								}
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

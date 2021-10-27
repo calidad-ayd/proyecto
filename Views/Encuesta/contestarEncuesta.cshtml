@@ -1,0 +1,71 @@
+﻿@model ComunidadPractica.Models.EncuestaModel
+@{ ViewBag.Title = "Contestar una Encuesta"; }
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container">
+		<div class="row">
+            <div class="col-lg-8 mx-auto text-left">
+                <h1>@ViewBag.Title</h1>
+                @if (ViewBag.Error.Length > 1)
+                {
+                    <h5 class="text-danger"> @ViewBag.Error</h5>
+                }
+                @using (Html.BeginForm())
+                {
+                    <h4>@Model.titulo</h4>
+                   
+                   <br><p>Seleccione una opción por Enunciado</p>
+                    foreach (var item in @Model.items)
+                    {
+                        <div class="card">
+                            <h5>@item.enunciado</h5>
+                            <br><br>
+                            @foreach (var opcion in item.opciones)
+                            {
+                                <div class="custom-control custom-radio">
+                                    <input id="@item.enunciado-@opcion" type="radio" name="respuesta-item-@item.numItem" class="custom-control-input">
+                                    <label class="custom-control-label" for="@item.enunciado-@opcion">@opcion</label>
+                                </div>
+                                <br>
+                            }
+                        </div>
+                    }
+                    <br>
+                    <input onclick="subirRespuestaEncuesta()" name="subirRespuesta" id="subirRespuesta" type="button" class="btn btn-dark" value="Responder Encuesta" />}
+            </div>
+		</div>
+	</div>
+	<script>
+
+		var idsEnunciados = @Html.Raw(Json.Encode(ViewBag.IDsItems));
+		console.log(idsEnunciados);
+
+		function subirRespuestaEncuesta() {
+
+			var respuestas = [];
+			for (var i = 0; i < idsEnunciados.length; i++) {
+				$("input:radio[name=respuesta-item-" + idsEnunciados[i] + "]").each(function (i, o) {
+					if ($(this).is(":checked"))
+						var opcion = $(this).next().text();
+						if (typeof opcion !== 'undefined') {
+							respuestas.push(opcion);
+						}
+				});
+			}
+
+			$.ajax({
+				url: '@Url.Action("contestarEncuesta", "Encuesta")',
+				data: { encuestaID: @Model.id, numItems: idsEnunciados, respuestas: respuestas },
+				async: false,
+				type: "POST",
+				success: function (url) {
+					window.location.href = url;
+				}
+			})
+		}
+	</script>
+</body>
+</html>
+

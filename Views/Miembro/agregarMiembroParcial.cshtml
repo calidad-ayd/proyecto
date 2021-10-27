@@ -1,0 +1,210 @@
+﻿@model ComunidadPractica.Models.MiembroModel
+<br />
+@using (Html.BeginForm("agregarMiembro", "Miembro", FormMethod.Post, new
+{ @class = "formularioMiembro", enctype = "multipart/form-data" }))
+{
+	@Html.HiddenFor(model => model.esParticipanteExterno, Model.esParticipanteExterno);
+	@Html.AntiForgeryToken()
+	<form class="form-horizontal">
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label autocompletar">@Html.LabelFor(model => model.correo, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@if (Model.correo == null)
+				{
+					@Html.TextBoxFor(model => model.correo, new { id = "autocompletar", @class = "form-control", @style = "max-width:100%;" })
+				}
+				else
+				{
+					@Html.TextBoxFor(model => model.correo, new { id = "autocompletar", @class = "form-control", @style = "max-width:100%;", @readonly = "readonly" })
+				}
+				<label class="text-danger" id="error_correo"></label>
+			</div>
+		</div>
+
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.nombre, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@Html.TextBoxFor(model => model.nombre, new { @class = "form-control", @style = "max-width:100%;", @Value = Model.nombre })
+				<label class="text-danger" id="error_nombre"></label>
+			</div>
+		</div>
+		@if (!Model.esParticipanteExterno) { 
+			<div class="form-group row">
+				<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.contrasenna, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+				<div class="col-lg-8">
+					@Html.PasswordFor(model => model.contrasenna, new { @class = "form-control", @style = "max-width:100%;" })
+					<label class="text-danger" id="error_contrasenna"></label>
+				</div>
+			</div>
+		}
+		
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.pais, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@{
+					ViewBag.listadoPaises = ComunidadPractica.Constantes.obtenerListadoPaises();
+				}
+				<select id="pais" class="form-control" data-val="true" data-val-required="Por favor seleccione al menos una opción." name="pais" style="max-width:100%">
+					@foreach (string paises in ViewBag.listadoPaises)
+					{
+						<option value="@paises">@paises</option>
+					}
+				</select>
+				<label class="text-danger" id="error_pais"></label>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.contacto, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@Html.TextBoxFor(model => model.contacto, new { @class = "form-control", @style = "max-width:100%;", @Value = Model.contacto })
+				<label class="text-danger" id="error_contacto"></label>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.sexo, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				<select id="sexo" class="form-control" data-val="true" data-val-required="Por favor seleccione al menos una opción." name="sexo" style="max-width:100%">
+					@if (Model.sexo == null)
+					{
+						<option value="" selected disabled>- Sin selección -</option>
+						<option value="Masculino">Masculino</option>
+						<option value="Femenino">Femenino</option>
+					}
+					else
+					{
+						if (Model.sexo == "Masculino" || Model.sexo == "masculino")
+						{
+							<option selected value="Masculino">Masculino</option>
+							<option value="Femenino">Femenino</option>
+						}
+						else
+						{
+							<option selected value="Femenino">Femenino</option>
+							<option value="Masculino">Masculino</option>
+						}
+					}
+				</select>
+				<label class="text-danger" id="error_sexo"></label>
+			</div>
+		</div>
+		<div class="form-group row">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.condicionLaboral, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				<select id="condicionLaboral" class="form-control .form-control-registro" data-val="true" data-val-required="Por favor seleccione al menos una opción." name="condicionLaboral" style="max-width:100%">
+					<option value="Empleado">Empleado</option>
+					<option value="Desempleado">Desempleado</option>
+				</select>
+				<label class="text-danger" id="error_condicionLaboral"></label>
+			</div>
+		</div>
+		<div class="form-group row ">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.habilidades, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@{
+					ViewBag.habilidades = ComunidadPractica.Constantes.obtenerListadoHabilidades();
+				}
+				<select id="habilidades" class="mul-select" data-val="true" data-val-required="Por favor seleccione al menos una opción." name="habilidades" multiple="multiple" style="width:100%">
+					@foreach (string habilidad in ViewBag.habilidades)
+					{
+						<option value="@habilidad">@habilidad</option>
+					}
+				</select>
+			</div>
+		</div>
+		<div class="form-group row ">
+			<label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.idiomas, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+			<div class="col-lg-8">
+				@{
+					ViewBag.lenguajes = ComunidadPractica.Constantes.obtenerListadoIdiomas();
+				}
+				<select id="idiomas" class="minimun mul-select" data-val="true" data-val-required="Por favor seleccione al menos una opción." name="idiomas" multiple="multiple" style="width:100%">
+					@foreach (string lenguaje in ViewBag.lenguajes)
+					{
+						<option value="@lenguaje">@lenguaje</option>
+					}
+				</select>
+				<label class="text-danger" id="error_idiomas"></label>
+			</div>
+		</div>
+		<input type="submit" class="btn btn-dark" value="Registrarme" />
+	</form>
+}
+<script>
+	$(document).ready(function () {
+		$(".mul-select").select2({
+			minimumInputLength: 3,
+			placeholder: "- Sin selección -",
+			tokenSeparators: ['/', ',', ';', " "]
+		});
+	});
+
+	$('.formularioMiembro').submit(function () {
+
+		var errores = 0;
+		var esExterno = @Json.Encode(Model.esParticipanteExterno);
+
+		$("#error_correo").text("");
+		$("#error_nombre").text("");
+
+		if (!esExterno) {
+			$("#error_contrasenna").text("");
+		}
+
+		$("#error_sexo").text("");
+		$("#error_contacto").text("");
+		$("#error_idiomas").text("");
+
+		if ($("#autocompletar").val().length < 5) {
+			$("#error_correo").text("Debe ingresar un correo válido");
+			errores++;
+		}
+
+		if ($("#nombre").val().length < 2) {
+			$("#error_nombre").text("Debe ingresar un nombre de 2 caracteres");
+			errores++;
+		}
+		if (!esExterno) {
+			if ($("#contrasenna").val().length < 8) {
+				$("#error_contrasenna").text("Debe ingresar una contraseña de 8 caracteres");
+				errores++;
+			}
+		}
+
+		if ($("#sexo").val() != "Masculino" && $("#sexo").val() != "Femenino" ) {
+			$("#error_sexo").text("Debe seleccionar su sexo");
+			errores++;
+		}
+
+		if ($("#pais").val() == " - Sin Selección - ") {
+			$("#error_pais").text("Debe seleccionar una opción");
+			errores++;
+		}
+
+		if ($("#contacto").val().length < 6) {
+			$("#error_contacto").text("Debe escribir un contacto (teléfono)");
+			errores++;
+		}
+
+		if ($('#idiomas').get(0).selectedIndex == -1) {
+			$("#error_idiomas").text("Debe seleccionar al menos un idioma");
+			errores++;
+		}
+
+		return (errores == 0);
+	});
+
+   $("#autocompletar").change(function () {
+	    var encActionURL = '@Url.Action("agregarMiembroParcial", "Miembro")';
+	    var correo = $('#autocompletar').val();
+	    var dataToSend = JSON.stringify({ 'correo': correo });
+        $.ajax({
+			type: "POST",
+            url: encActionURL,
+            contentType: 'application/json; charset=utf-8',
+            data: dataToSend,
+            success: function (vistaParcial) {
+				$("#agregarMiembroParcial").html(vistaParcial);
+            }
+        });
+   });
+</script>

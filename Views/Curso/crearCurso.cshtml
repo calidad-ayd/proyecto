@@ -1,0 +1,231 @@
+﻿@model ComunidadPractica.Models.CursoModel
+@{
+    ViewBag.Title = "Crear un Cruso";
+}
+<html lang="en">
+<body>
+    <div class="row">
+        <div class="container center" style="max-width: 60%;  line-height: 2">
+
+            @using (Html.BeginForm("CrearCurso", "Curso", FormMethod.Post, new { enctype = "multipart/form-data", @id="cursoForm" }))
+            {
+                <!-- Seleccionar nombre -->
+                @Html.AntiForgeryToken()
+                <br /><br />
+                <div class="row ">
+                    <div class="col-md-12 col-sm-8">
+                        <h4>Seleccione el curso que desea crear </h4>
+                        <br>
+                    </div>
+                    <div class="col-md-12 col-sm-8">
+                        <h5>
+                            <select class="mul-select btn btn-danger dropdown-toggle" data-val="true" id="seleccionNombreCurso" name="nombre" onchange="muestreAgregarSecciones()" style="width:65%; height: 39px;">
+                                <option value="" disabled selected hidden></option>
+                                @foreach (var nombre in ViewBag.nombresCursos)
+                                {
+                                    <option>@nombre</option>  
+                                }
+                            </select>
+                        </h5>
+                    </div>
+                </div>
+
+                <!-- Secciones -->
+                <div id="agregarSecciones" style="display:none">
+                    <br>
+                    <h5>Construya el curso agregando secciones y materiales</h5>
+                    <br>
+                    <div id="secciones">
+                    </div>
+                    <br />
+                    <a class="btn btn-dark" href="javascript:void(0)" id="agregarSeccion" onclick="agregarSeccion()"><b>Agregar nueva sección</b></a>
+                    <br />
+                    <br />
+                    <button type="button" onclick="despliegueTodo()" class="btn btn-dark bg-pallete4">Completar creación curso</button>
+                    <button type="submit" id="submit" hidden="hidden"></button>
+                </div>
+            }
+            <br />
+            @if (ViewBag.Message != null)
+            {
+                ViewBag.alertType = "alert-danger";
+                if (ViewBag.creado)
+                {
+                    ViewBag.alertType = "alert-success";
+                }
+                <div class="alert @ViewBag.alertType alert-dismissible fade show" role="alert">
+                    <h5>
+                        @ViewBag.Message
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </h5>
+                </div>
+            }
+        </div>
+
+        <!-- Lo que se clona(nueva seccion) -->
+        <div id="seccionTemplate" style="display: none">
+
+            <div class="seccion" id="seccion_NUMERO_SECCCION">
+                <!-- Borde de seccion -->
+                <div class="card bg-pallete5" style="padding: 0;">
+                    <!-- Boton de seccion -->
+                    <div id="seccion_btn_NUMERO_SECCION"  class="btn card-header collapsed color-pallete1" onclick="toggleSectionBody(NUMERO_SECCION)">
+                        <p><h5><b id="Titulo_NUMERO_SECCION">Sección SECCION_TITULO</b></h5></p>
+                    </div>
+
+                    <!-- Contenido de seccion -->
+                    <div class="colapsable" id="seccionCollapse_NUMERO_SECCION" style="display:none">
+                        <div class="card-body bg-pallete1">
+                            <div class="row">
+                                <h5 class="col-md-4 col-form-label">
+                                    <b>@Html.LabelFor(model => model.secciones[0].nombre, new { @for = "items_NUMERO_SECCION__nombre", @style = "max-width: 100%" })</b>
+                                </h5>
+                                <div class="col-md-8">
+                                    @Html.TextBox("secciones[NUMERO_SECCION].nombre", "",
+                                        new { @required = "required", @class="form-control", @id="secciones_NUMERO_SECCION__nombre", @value="Sección SECCION_TITULO",
+                                            @onkeypress ="cambieTitulo(\"secciones_NUMERO_SECCION__nombre\",\"Titulo_NUMERO_SECCION\")", @style="max-width: 100%" })
+                                    @Html.ValidationMessage("secciones[NUMERO_SECCION].nombre", "", new { @class = "text-danger" })<br />
+                                </div>
+                                <h5 class="col-md-4 col-form-label">
+                                    <b>@Html.LabelFor(model => model.secciones[0].descripcion, new { @for = "items_NUMERO_SECCION__descripcion", @style = "max-width: 100%" })</b>
+                                </h5>
+                                <div class="col-md-8">
+                                    @Html.TextBox("secciones[NUMERO_SECCION].descripcion", "", new { @required = "required", @class = "form-control", @id = "secciones_NUMERO_SECCION__descripcion", @style = "max-width: 100%" })
+                                    @Html.ValidationMessage("secciones[NUMERO_SECCION].descripcion", "", new { @class = "text-danger" })<br />
+                                </div>
+                            </div>
+                            <div id="materiales_NUMERO_SECCION">
+
+                            </div>
+                            <br />
+                            <div style="float: right;">
+                                <a href="javascript:void(0)" id="agregarMaterial" onclick="agregarMaterial(NUMERO_SECCION)" class="btn btn-dark"> Agregar nuevo material</a>
+                            </div>
+                            <br><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lo que se clona(nuevo material) -->
+        <div id="materialTemplate" style="display: none">
+            <!-- Borde de material -->
+			<div  style="padding: 0;" class="material_NUMERO_MATERIAL_NUMERO_SECCION card bg-pallete5" id="material_NUMERO_MATERIAL_NUMERO_SECCION">
+				<!-- Boton de material -->
+				<div type="button" class="btn card-header collapsed color-pallete1" id="heading_NUMERO_MATERIAL_NUMERO_SECCION" onclick="toggleMaterialBody(NUMERO_SECCION, NUMERO_MATERIAL)">
+					<p><h6><b id="Titulo_NUMERO_MATERIAL_NUMERO_SECCION">Material MATERIAL_TITULO</b></h6></p>
+				</div>
+                <!-- Contenido de material -->
+				<div class="colapsable bg-pallete1" id="materialCollapse_NUMERO_MATERIAL_NUMERO_SECCION" style="display:none">
+					<div class="card-body ">
+						<div class="row">
+							<h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].nombre, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre", @style = "max-width: 100%" })</b></h5>
+							<div class="col-md-8">
+								@Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].nombre", "",
+										 new
+										 {
+											 @required = "required",
+											 @class = "form-control text-left",
+											 @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre",
+											 @style = "max-width: 100%",
+											 @onkeypress = "cambieTitulo(\"secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre\", \"Titulo_NUMERO_MATERIAL_NUMERO_SECCION\")",
+											 @value = "Material MATERIAL_TITULO"
+										 })<br />
+							</div>
+							<h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].descripcion, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__descripcion", @style = "max-width: 100%" })</b></h5>
+							<div class="col-md-8">
+								@Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].descripcion", "", new { @required = "required", @class = "form-control text-left", @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__descripcion", @style = "max-width: 100%" })<br />
+							</div>
+						</div>
+						<div class="row">
+							<h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].file, new { @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__file", @style = " max-width: 100%" })</b></h5>
+							<div class="col-md-4" style="max-width:100%">
+								@Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].file", "", new { @class = "bg-pallete2 mr-2", @type = "file", @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__file", @style = "font-size: 80%; max-width: 100%;" })<br />
+								<br />
+							</div>
+						</div>
+						<div class="row">
+							<h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].link, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__link", @style = "max-width: 100%" })</b></h5>
+							<div class="col-md-8">
+								@Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].link", "", new { @oninvalid = "alert('Debe ingrar una url válida.');", @type = "url", @class = "form-control text-left", @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__link", @style = "max-width: 100%" })<br />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+        </div>
+
+
+        <script>
+
+            $(document).ready(function () {
+                $(".mul-select").select2({
+                    placeholder: "- Sin selección -",
+                    tokenSeparators: ['/', ',', ';', " "],
+                });
+            });
+
+            function cambieTitulo(textoID, tituloID) {
+                $("#" + tituloID).html($("#"+textoID).val());
+            }
+
+            function despliegueTodo(){
+                $(".colapsable").css('display', 'block');
+                document.getElementById("submit").click();
+            }
+
+            function toggleSectionBody(seccion) {
+                id = 'seccionCollapse_' + seccion;
+                if (document.getElementById(id).style.display == 'none') {
+                    $('#' + id).css('display', 'block');
+                } else {
+                    $('#' + id).css('display', 'none');
+                }
+            }
+
+            function toggleMaterialBody(seccion, material) {
+                id = 'materialCollapse_' + material + "_" + seccion;
+                if (document.getElementById(id).style.display == 'none') {
+                    $('#'+id).css('display', 'block');
+                } else {
+                    $('#'+id).css('display', 'none');
+                }
+            }
+
+            var numeroSeccion = 0;
+            var numeroMaterial = [];
+            function agregarSeccion() {
+                var clone = $('#seccionTemplate').clone();
+                clone.html($(clone).html().replace(/NUMERO_SECCION/g, numeroSeccion));
+                clone.html($(clone).html().replace(/SECCION_TITULO/g, (numeroSeccion + 1)));
+                $('#secciones').append(clone.html());
+                numeroMaterial[numeroSeccion] = 0;
+                numeroSeccion++;
+            }
+
+            function agregarMaterial(seccion) {
+                console.log("Creando material.");
+                var clone = $('#materialTemplate').clone();
+                clone.html($(clone).html().replace(/NUMERO_MATERIAL/g, numeroMaterial[seccion]));
+                clone.html($(clone).html().replace(/MATERIAL_TITULO/g, (numeroMaterial[seccion] + 1)));
+                clone.html($(clone).html().replace(/NUMERO_SECCION/g, seccion));
+                $('#materiales_' + seccion).append(clone.html());
+                id = "heading_" + numeroMaterial[seccion] + "_" + seccion;
+                numeroMaterial[seccion]++;
+            }
+
+            function muestreAgregarSecciones() {
+                console.log("Nombre ha sido seleccionado.")
+                var x = document.getElementById("agregarSecciones");
+                if (x.style.display === "none") {
+                    x.style.display = "block"
+                }
+                var opcionDefault = document.getElementById("opcionDefault");
+            }
+        </script>
+    </div>
+</body>
+</html>

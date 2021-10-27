@@ -1,0 +1,32 @@
+﻿@if (ComunidadPractica.Controllers.SesionController.existeSesion(HttpContext.Current))
+{
+	<li class="nav-item">
+
+		@if (ComunidadPractica.Controllers.AutorizacionController.tengoPermiso(HttpContext.Current,
+				ComunidadPractica.Handlers.SesionHandler.Permiso.MiembroEditar)){
+
+			var modelo = ComunidadPractica.Controllers.SesionController.obtenerModeloSesion(HttpContext.Current);
+
+			<div class="alert-success clickeable" style="display:inline-block;" onclick="window.location='@Url.Action("verMiembro","Miembro",  new { correo = Tokenizador.TokenizarHilera(modelo.correo) } )' ;">
+				&ensp;<img src="~/Content/images/profile.png" width="32" height="32" style="display:inline-block;">
+				@Html.ActionLink(modelo.nombre, "verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(modelo.correo) }, new { @class = "nav-link font-weight-bold", style = "display:inline-block;" })
+			</div>
+		}
+
+	</li>
+	<div>&ensp; &ensp;</div>
+	<li class="nav-item">
+		@Html.ActionLink("CERRAR SESIÓN", "finalizarSesion", "Sesion", null, new { @class = "nav-link font-weight-bold" })
+	</li>
+}
+else
+{
+	<li class="nav-item">
+		<a class="nav-link font-weight-bold" href="#" data-toggle="modal" data-target="#iniciarSesion">
+			INICIAR SESIÓN
+		</a>
+	</li>
+	<li class="nav-item">
+		@Html.ActionLink("REGISTRARSE", "agregarMiembro", "Miembro", null, new { @class = "nav-link font-weight-bold" })
+	</li>
+}

@@ -1,0 +1,226 @@
+﻿@model ComunidadPractica.Models.CursoModel
+
+@{
+    ViewBag.cardNumber = 1;
+    ViewBag.viewmode = "visibility:hidden";
+}
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>@Model.nombre</title>
+    <style>
+        .justify {
+            text-align: justify;
+            text-justify: inter-word;
+        }
+    </style>
+</head>
+
+<body>
+    <br><br><br>
+            <div class="container body-content" id="verCursoParcial">
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-md-auto">
+                        @{var version = "V." + Model.version.ToString();}
+                        <h4 class="ml-3 text-uppercase"><b>@Model.nombre </b> @version</h4>
+                    </div>
+                    @if (ComunidadPractica.Controllers.SesionController.existeSesion(HttpContext.Current) &&
+                         ComunidadPractica.Handlers.CursoHandler.perteneceCurso(ComunidadPractica.Controllers.SesionController.obtenerModeloSesionUsuario(HttpContext.Current).correo, Model.nombre))
+                    {
+                        <div class="col">
+                            <div class="btn_wrap" style="float:right">
+                                <span class="span-share">Compartir</span>
+                                <div class="inside-share">
+                                    <a target="_blank" href="#" class="facebook-btn color-pallete3" data-toggle="tooltip" data-placement="top" title="Comparte por Facebook">
+                                        <i class="fab fa-facebook"></i>
+                                    </a>
+
+                                    <a target="_blank" href="#" class="twitter-btn color-pallete3" data-toggle="tooltip" data-placement="top" title="Comparte por Twitter">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+
+                                    <a target="_blank" href="#" class="linkedin-btn color-pallete3" data-toggle="tooltip" data-placement="top" title="Comparte por LinkedIn">
+                                        <i class="fab fa-linkedin"></i>
+                                    </a>
+
+                                    <a target="_blank" href="#" class="whatsapp-btn color-pallete3" data-toggle="tooltip" data-placement="top" title="Comparte por Whatsapp">
+                                        <i class="fab fa-whatsapp"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col">
+                            <div style="float:right">
+                                <a class="btn btn-dark" href="@Url.Action("inscribirmeEnCurso","Curso", new {nombreCurso = Tokenizador.TokenizarHilera(Model.nombre) } )">Inscribirme</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <br>
+                @if (ComunidadPractica.Controllers.SesionController.existeSesion(HttpContext.Current) &&
+                     ComunidadPractica.Handlers.CursoHandler.perteneceCurso(ComunidadPractica.Controllers.SesionController.obtenerModeloSesionUsuario(HttpContext.Current).correo, Model.nombre))
+                {
+                    <label>Progreso:</label>
+                    <div class="progreso" style="margin: 0 auto; text-align:center;">
+                        <div id="progresoID" class="progreso-total" data-done="@ViewBag.progreso">
+                            @ViewBag.progreso%
+                        </div>
+                    </div>
+                }
+                <br>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Educador:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                <p class="justify">@Model.educador</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Descripción:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                <p class="justify">@Model.descripcion</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Contenidos:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                <pre class="justify">@Model.contenidos</pre>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <br>
+                @if (ComunidadPractica.Controllers.SesionController.existeSesion(HttpContext.Current))
+                {
+                    var modelo = ComunidadPractica.Controllers.SesionController.obtenerModeloSesionUsuario(HttpContext.Current);
+                    if (ComunidadPractica.Handlers.CursoHandler.perteneceCurso(modelo.correo, Model.nombre))
+                    {
+                        <div id="accordion">
+                            @foreach (var seccion in Model.secciones)
+                            {
+                                string collapseId = "collapse" + ViewBag.cardNumber;
+                                <div id="seccion_@collapseId" class="card cardMod hover_aprobarCurso w-200 bg-pallete1" style="max-width:200%">
+                                    <div class="btn card-header btn collapsed" data-toggle="collapse" data-target="#@collapseId" aria-expanded="true" aria-controls="collapseOne">
+                                        <h5 class="ml-3 text-uppercase"><b>@seccion.nombre</b></h5>
+                                        <h5 class="ml-3">@seccion.descripcion</h5>
+                                    </div>
+                                    <div id="@collapseId" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                        <div class="card-body">
+                                            <ul class="list-group list-group-flush">
+                                                @foreach (var material in seccion.materiales)
+                                                {
+                                                    <li class="list-group-item bg-pallete1">
+                                                        <div class="row">
+                                                            <div class="col-lg-4 px-0">
+                                                                @material.nombre
+                                                            </div>
+                                                            <div class="col-lg-4">
+                                                                @material.descripcion
+                                                            </div>
+                                                            @if (String.IsNullOrEmpty(material.link))
+                                                            {
+                                                                <div class="col-lg-4" id="taget">
+                                                                    <p><a target="_blank" class="link" href="@Url.Action("descargarArchivoMaterial", "Curso", new { filePath = material.path })" onclick="actualizar('@Model.nombre', '@modelo.correo', '@material.nombre', '@seccion.nombre')"> @Path.GetFileName(material.path)</a></p>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="col-lg-4">
+                                                                    <p><a class="link" href="@material.link" target="_blank" onclick="actualizar('@Model.nombre', '@modelo.correo', '@material.nombre', '@seccion.nombre')">@material.link</a></p>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                ViewBag.cardNumber += 1;
+                            }
+                        </div>
+                    }
+                }
+            </div>
+    <script>
+        const progreso = document.querySelector('.progreso-total');
+        setTimeout(() => {
+            progreso.style.opacity = 1;
+            progreso.style.width = progreso.getAttribute('data-done') + '%';
+        }, 500)
+    </script>
+
+    <script>
+    function actualizar(nombreCursoP, correoP, nombreMaterialP, nombreSeccionP) {
+        var req = { nombreCurso: nombreCursoP, correoEstudiante: correoP, nombreMaterial: nombreMaterialP, nombreSeccion: nombreSeccionP }
+        var encActionURL = '@Url.Action("actualizarPorcentaje", "Curso")';
+        $.ajax({
+            type: "POST",
+            data: req,
+            url: '@Url.Action("actualizarPorcentaje", "Curso")',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify(req),
+            success: function () {
+                    location.reload();
+            },
+            error: function() {
+                    location.reload();
+            }
+        });
+     };
+    </script>
+    <script>
+        // https://github.com/Godsont/Social-Share-Buttons/blob/master/main.js
+        const facebookBtn = document.querySelector(".facebook-btn");
+        const twitterBtn = document.querySelector(".twitter-btn");
+        const linkedinBtn = document.querySelector(".linkedin-btn");
+        const whatsappBtn = document.querySelector(".whatsapp-btn");
+
+        $(document).ready(function () {
+
+            let postUrl = encodeURIComponent(document.location.href);
+            let postTitle = encodeURIComponent("Estoy tomando el siguiente curso en línea: ");
+
+            facebookBtn.setAttribute(
+                "href",
+                `https://www.facebook.com/sharer.php?u=${postUrl}`
+            );
+
+            twitterBtn.setAttribute(
+                "href",
+                `https://twitter.com/share?url=${postUrl}&text=${postTitle}`
+            );
+
+            linkedinBtn.setAttribute(
+                "href",
+                `https://www.linkedin.com/shareArticle?url=${postUrl}&title=${postTitle}`
+            );
+
+            whatsappBtn.setAttribute(
+                "href",
+                `https://wa.me/?text=${postTitle}${postUrl}`
+            );
+        });
+    </script>
+</body>
+</html>

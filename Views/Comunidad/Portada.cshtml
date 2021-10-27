@@ -1,0 +1,44 @@
+﻿
+@{ ViewBag.Title = "Portada"; }
+<div style="width:100%; height:100%" class="bg-pallete5">
+	<div class="jumbotron jumbotron-fluid" style="background-size: cover;
+    background-image: url('../../Content/images/background-home.jpg'); min-height: 550px; ">
+		<div class="container body-content text-white text-left">
+			<h1 class="stroke-shadow huge-text">@ViewBag.Comunidad.nombre</h1>
+			<p class="lead stroke-shadow">@ViewBag.Comunidad.descripcion</p>
+			<p>
+				@Html.ActionLink("UNIRSE A LA COMUNIDAD", "agregarMiembro", "Miembro", null, new { @class = "btn btn-outline-dark btn-light btn-lg" })
+			</p>
+		</div>
+	</div>
+	<div class="bg-pallete5 color-pallete3">
+		<div class="container body-content">
+			<div class="row">
+				<br><br><br>
+				<div class="col">
+					<h1>NUESTRA VISIÓN</h1>
+					<p class="text-justify">
+						@ViewBag.Comunidad.vision
+					</p>
+				</div>
+				<div class="col">
+					<h1>NUESTRA MISIÓN</h1>
+					<p class="text-justify">
+						@ViewBag.Comunidad.mision
+					</p>
+				</div>
+			</div>
+		</div>
+		<br><br>
+	</div>
+	<div class="bg-white color-pallete5">
+		<div class="col text-center">
+			<br><br>
+			Contamos con miembros de todos partes del mundo...
+			<br><br><br><br>
+			<img src="~/Content/images/map.png" class="img-fluid" style="max-height: 500px; max-width: 500px;">
+			<br><br><br><br>
+		</div>
+	</div>
+</div>
+

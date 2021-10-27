@@ -1,0 +1,73 @@
+﻿@{
+	ViewBag.Title = "Noticia";
+}
+<!doctype html>
+<html lang="en">
+<body>
+	<script>
+		function copiarURLPortapapeles() {
+			var temporal = document.createElement('input'), text = window.location.href;
+			document.body.appendChild(temporal);
+			temporal.value = text;
+			temporal.select();
+			document.execCommand('copy');
+			document.body.removeChild(temporal);
+			alert("Enlace copiado al Portapapeles.");
+		}
+	</script>
+	@{ var fechaSpliteada = @ViewBag.Noticia.fecha.Split('_'); }
+
+	<div class="jumbotron jumbotron-fluid" style="background-size: cover;
+         background-image: url('../../Content/images/background-home.jpg'); min-height: 300px;">
+		<div class="container" style="margin-top:100px;">
+			<h2 class="display-4 title">
+				@ViewBag.Noticia.titulo
+			</h2>
+		</div>
+	</div>
+
+	<section class="card author mx-auto " style="max-width: 500px;">
+		@if (ViewBag.Noticia.tipoImagen.Length > 1)
+		{
+<img class="card-img-top card-img-top-fix" src="../../Content/stored/Noticias/Imagenes/Noticia.@ViewBag.Noticia.fecha.@ViewBag.Noticia.tipoImagen">
+				<br>
+								<hr>}
+
+		<div class="container" style="padding: 0px 0px 0px;">
+
+			<div class="d-flex" style="align-items: center;">
+
+				<div class="p-2" style="line-height: 2%; text-transform: uppercase; font-size: 60%;">
+
+					<h3 id="año" style="letter-spacing: 10px; ">@fechaSpliteada[2]</h3><br>
+					<h5 id="mes" style="letter-spacing: 18px; ">@fechaSpliteada[1]</h5><br>
+					<h7 id="dia" style="letter-spacing: 6px;">@fechaSpliteada[0]</h7>
+
+				</div>
+
+				<div class="p-2 flex-grow-1" style="line-height: 60%; border-right: 1px solid #cecece; border-left: 1px solid #cecece; ">
+					<p style="font-size:50%; letter-spacing: 7px;">AUTOR</p>
+
+					@Html.ActionLink((String)@ViewBag.Noticia.autor, "verMiembro", "Miembro", new { correo = @ViewBag.Noticia.correo },
+												new { @class = "h4 link a-pallete-hover color-pallete5" })
+					<br />
+					<br />
+					<p>@ViewBag.Noticia.correo</p>
+				</div>
+
+				<div class="p-2 " style="font-size: 40%;">
+					<button onclick="copiarURLPortapapeles()" type="button" class="btn btn-sm">COMPARTIR</button>
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<br><br>
+	<div class="container" style="line-height: 2;">
+		<div class="col-lg-8 mx-auto text-justify">
+			@ViewBag.Noticia.cuerpo
+		</div>
+	</div>
+</body>
+</html>
+

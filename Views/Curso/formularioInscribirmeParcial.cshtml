@@ -1,0 +1,96 @@
+﻿@model ComunidadPractica.Models.UsuarioEnCurso
+<div class="col-12">
+    <div>
+        <script>
+            function validarSeleccion() {
+                var errores = 0;
+                $("#error-sexo").text("");
+                $("#error-pais").text("");
+                $("error_contrasenna").text("");
+
+                if ($("#contrasenna").val().legnth < 8) {
+                    $("#error_contrasenna").text("Debe ingresar una constraseña de mínimo 8 caractéres");
+                    errores++;
+                }
+
+                if ($("#usuario_sexo :selected").text() == " - Sin Selección - ") {
+                    $("#error-sexo").text("Debe escojer una opción al menos.");
+                    errores++;
+                }
+
+                if ($("#usuario_pais :selected").text() == " - Sin Selección - ") {
+                    $("#error-pais").text("Debe escojer una opción al menos.");
+                    errores++;
+                }
+
+                if (errores == 0) {
+                    $.ajax({
+                        url: '@Url.Action("iniciarSesionPorModelo", "Sesion")',
+                        type: "POST",
+                        data: {
+                            'correo': correo,
+                            'usuario':@Model.usuario
+                        },
+                        cache: true,
+                        dataType: 'json'
+                    });
+                }
+
+                return errores == 0;
+            }
+        </script>
+        @using (Html.BeginForm("inscribirParticipanteExterno", "Curso", FormMethod.Post, new {@id="formularioInscribirse", @class = "form-horizontal", onsubmit = "return validarSeleccion()" }))
+        {
+            @Html.HiddenFor(model => model.curso.nombre)
+            @Html.HiddenFor(model => model.usuario.correo)
+            <br><br>
+            <h5>Debe llenar esta información para completar la inscripción en el curso</h5>
+
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.usuario.nombre, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+                <div class="col-lg-8 text-left">
+                    @Html.TextBoxFor(model => model.usuario.nombre, new { @class = "form-control", @style = "max-width:60%;" })
+                    @Html.ValidationMessageFor(model => model.usuario.nombre, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.usuario.contrasenna, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+                <div class="col-lg-8">
+                    @Html.PasswordFor(model => model.usuario.contrasenna, new { @class = "form-control", @style = "max-width:60%;" })
+                    <label class="text-danger" id="error_contrasenna"></label>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.usuario.contacto, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+                <div class="col-lg-8 text-left">
+                    @Html.TextBoxFor(model => model.usuario.contacto, new { @class = "form-control", @style = "max-width:60%;" })
+                    @Html.ValidationMessageFor(model => model.usuario.contacto, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.usuario.pais, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+                <div class="col-lg-8 text-left">
+                    @Html.DropDownListFor(model => model.usuario.pais, new SelectList(ComunidadPractica.Constantes.obtenerListadoPaises()), new { @class = "form-control", @style = "max-width:60%;" })
+                    <br>
+                    <span class="field-validation-valid text-danger" id="error-pais"></span>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <label class="col-lg-4 col-form-label">@Html.LabelFor(model => model.usuario.sexo, new { @class = "float-lg-right float-md-left float-sm-left float-xs-left ", @style = "  font-weight:bold; white-space:nowrap" })</label>
+                <div class="col-lg-8 text-left">
+                    @Html.DropDownListFor(model => model.usuario.sexo, new SelectList(ComunidadPractica.Constantes.obtenerListadoGeneros()), null, new { @class = "form-control", @style = "max-width:60%;" })
+                    <br>
+                    <span class="field-validation-valid text-danger" id="error-sexo"></span>
+                </div>
+            </div>
+
+            <input type="submit" class="btn btn-dark" value="Completar Inscripción" />
+            <br>
+        }
+    </div>
+		<br>
+	</div>

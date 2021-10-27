@@ -1,0 +1,71 @@
+﻿@model ComunidadPractica.Models.EncuestaModel
+@{
+    ViewBag.Title = "Respuestas de encuesta";
+    ViewBag.Porcentaje = "0.0";
+}
+
+<!doctype html>
+<html lang="en">
+<body>
+    <br><br><br>
+    <div class="container center" style="max-width: 70%; line-height: 2">
+
+        <h1 style="font-size:2.5vw">@Model.titulo</h1>
+
+        <div class="row justify-content-md-center">
+            <label>Fecha de cierre: @Model.fechaCierre </label>
+        </div>
+
+        <div class="row justify-content-md-center">
+            <label>Cantidad de respuestas: @ViewBag.cantRespuestas</label>
+        </div>
+        
+		<div class="row justify-content-md-center">
+			<a class="btn btn-dark" href="@Url.Action("descargarRespuestas", "Encuesta", new { encuestaID = Model.id })">Descargar respuestas</a>
+		</div>
+        <br>
+        @foreach (var item in @Model.items)
+        {
+            <div class="card">
+                <h5>@item.enunciado</h5>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width:40%"></th>
+                            <th scope="col" style="width:30%"></th>
+                            <th scope="col" style="width: 15%; text-align: center">Porcentaje respuestas</th>
+                            <th scope="col" style="width: 15%; text-align: center">Cantidad respuestas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var respuesta in item.respuestas)
+                        {
+                            if (ViewBag.cantRespuestas != 0)
+                            {
+                                ViewBag.Porcentaje = ((double)@respuesta.Item2 * 100 / ViewBag.cantRespuestas).ToString("0.00") + "%";
+                            }
+                            else
+                            {
+                                ViewBag.Porcentaje = "0.00%";
+                            }
+
+                            <tr>
+                                <td>@respuesta.Item1</td>
+                                <td>
+                                    <div class="progress mt-2 bg-pallete6">
+                                        <div class="progress-bar bg-pallete5" style="width:@ViewBag.Porcentaje"></div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center">
+                                    @ViewBag.Porcentaje
+                                </td>
+                                <td style="text-align: center">@respuesta.Item2</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</body>
+</html>

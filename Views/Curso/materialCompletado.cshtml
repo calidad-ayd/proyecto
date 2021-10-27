@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Porcentajes del Curso";
+}
+
+<!doctype html>
+<html lang="en">
+<body>
+    <br><br><br>
+            <div class="container center" style="max-width: 70%; line-height: 2">
+                <h1 style="font-size:2.5vw">@ViewBag.nombre</h1>
+                <br />
+                <div class="card">
+                    <table class="table">
+                        <thead>
+							<tr>
+								<th scope="col" style="width:40%;">Estudiantes</th>
+								<th scope="col" style="width:30%"></th>
+								<th scope="col" style="width: 15%; align-self: center; text-align:center">Porcentaje completado</th>
+								<!--<th scope="col" style="width: 15%; text-align:center; align-self: center; ">Certificar estudiante</th>-->
+							</tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var estudiantes in ViewBag.estudiantes)
+                            {
+                                ViewBag.porcentajeEstudiante = (int)@estudiantes.porcentaje + "%";
+                            <tr>
+                                <td>@estudiantes.correoEstudiante</td>
+                                <td>
+                                    <div class="progress mt-2 bg-pallete6">
+                                        <div class="progress-bar bg-pallete5" style="width:@ViewBag.porcentajeEstudiante"></div>
+                                    </div>
+                                </td>
+                                <td style="text-align: center">
+                                    @estudiantes.porcentaje%
+                                </td>
+                                @if (estudiantes.porcentaje == 100)
+                                {
+                                   <!-- <td><a class="btn btn-dark mr-lg-7" style="float:right;">Certificar</a></td> -->
+                                }
+                                else
+                                {
+                                   <!-- <td><a class="btn btn-secondary disabled mr-lg-7" style="float:right; color: #fff !important; ">Certificar</a></td>-->
+                                }
+
+
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+<script>
+    function recuperar() {
+        console.log("Entro");
+    }
+
+</script>
+
+</body>
+</html>

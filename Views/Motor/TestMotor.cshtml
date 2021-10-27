@@ -1,0 +1,14 @@
+﻿<!doctype html>
+<html lang="en">
+<body>
+    <br />
+    <br />
+    <br />
+    @using (Html.BeginForm("TestMotor", "Motor", FormMethod.Post, new
+    { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        <input type="submit" class="btn btn-dark" value="Correr test" />
+    }
+    </body>
+</html>

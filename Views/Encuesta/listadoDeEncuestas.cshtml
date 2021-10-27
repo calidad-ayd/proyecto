@@ -1,0 +1,129 @@
+﻿@{ ViewBag.Title = "Encuestas"; }
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container body-content ">
+		<h3 class="display-4"> @ViewBag.Title</h3>
+		@if (ViewBag.Mensaje.Length > 1)
+		{
+			<h5 class="text-success"> @ViewBag.Mensaje</h5>
+		}
+		<br>
+		<div class="row justify-content-start">
+
+			<div class="container">
+
+				<div class="row justify-content-md-center">
+
+					<div class="col col-sm-auto">
+
+						<div class="input-group input-group">
+							<input style="display: inline-block; width: 700px; height: 38px;" class="form-control" type="text" id="filtrarPorTitulo" placeholder="Buscar por titulo . . . " title="Ingrese el nombre del titulo">
+						</div>
+
+						<div class="hidden-lg hidden-md hidden-sm">&nbsp;</div>
+					</div>
+
+					<div class="col-md-auto justify-content-md-center text-center align-content-center">
+						Categoría:
+						<div style="display: inline-block;" id="filtrarPorCategoria" class="dropdown">
+							<button style="display: inline-block; width: 200px;" class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								Todas
+							</button>
+							<ul class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+								<li><a class="dropdown-item" href="#" value="Todas">Todas</a></li>
+								<li class="dropdown-divider"></li>
+								@foreach (string categoria in ViewBag.Categorias)
+								{
+									<li><a class="dropdown-item" href="#" value=@categoria>@categoria</a></li>
+								}
+							</ul>
+						</div>
+						<div style="display: inline-block;" class="width: 90px;"></div>
+						Tópico:
+						<div style="display: inline-block;" id="listadoDeTopicosParcial"></div>
+						<div style="display: inline-block;" class="width: 90px;"></div>
+						<a class="btn btn-dark" onclick="refrescarEncuestasDinamicas()">Refrescar</a>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+		<br>
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-pallete-main table-pallete1" id="encuestasTable">
+					<tr>
+						<th style="width: 35%">Título de encuesta</th>
+						<th style="width: 35%">Fecha de finalización</th>
+					</tr>
+				</table>
+				<table class="table table-pallete-main table-pallete1" id="listadoDeEncuestasParcial">
+				</table>
+			</div>
+		</div>
+
+	</div>
+	<script type="text/javascript">
+
+		$("#filtrarPorCategoria").on('click', 'li a', function () {
+			$("#filtrarPorCategoria button").text($(this).text());
+			$("#filtrarPorCategoria button").val($(this).text());
+			refrescarTopicosDinamico();
+		});
+
+		$(document).ready(function () {
+
+			refrescarTopicosDinamico();
+			registrarEventoTopicos();
+			refrescarEncuestasDinamicas();
+
+		});
+
+		function registrarEventoTopicos() {
+
+			$("#filtrarPorTopico").on('click', 'li a', function () {
+				$("#filtrarPorTopico button").text($(this).text());
+				$("#filtrarPorTopico button").val($(this).text());
+			});
+		}
+
+		function refrescarTopicosDinamico() {
+
+			var val = $("#filtrarPorCategoria button").val();
+			$.ajax({
+				async: false,
+				url: '/Encuesta/listadoDeTopicosParcial',
+				data: { categoria: val },
+				type: 'POST',
+				success: function (vistaParcial) {
+					$("#listadoDeTopicosParcial").html(vistaParcial);
+				}
+			});
+
+			registrarEventoTopicos();
+		}
+
+		function refrescarEncuestasDinamicas() {
+
+			var titulo = $("#filtrarPorTitulo").val();
+			var categoria = $("#filtrarPorCategoria button").val();
+			var topico = $("#filtrarPorTopico button").val();
+
+			$.ajax({
+				async: false,
+				url: '/Encuesta/listadoDeEncuestasParcial',
+				data: { titulo: titulo, categoria: categoria, topico: topico },
+				type: 'POST',
+				success: function (vistaParcial) {
+					$("#listadoDeEncuestasParcial").html(vistaParcial);
+				}
+			});
+		}
+
+	</script>
+</body>
+</html>
+

@@ -1,0 +1,109 @@
+﻿@model List<ComunidadPractica.Models.CursoModel>
+@{ViewBag.cardNumber = 0;}
+@foreach (var curso in Model)
+{
+    string collapseId = "collapse" + ViewBag.cardNumber;
+    <div class="card cardMod hover_aprobarCurso w-200 bg-pallete1" style="max-width:200%">
+        <div class="btn card-header btn collapsed " data-toggle="collapse" data-target="#@collapseId" aria-expanded="true" aria-controls="collapseOne">
+            <div class="float-left text-left">
+                @{var version = "V." + curso.version.ToString();}
+                <h5 class="ml-3 text-uppercase"><b>@curso.nombre @version</b></h5>
+                <h5 class="ml-3">Educador: @curso.nombreEducador</h5>
+            </div>
+        </div>
+
+        <div id="@collapseId" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-pallete1">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Descripción:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                @Html.Raw(curso.descripcion)
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item bg-pallete1">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Pecio:</b>
+                            </div>
+                            <div class="col-lg-8">$ 
+                                @curso.costo
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item bg-pallete1">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Categorias:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                @foreach (var categorias in curso.categorias)
+                                {
+                                    <span class="badge bg-pallete2" style="font-size: 90%">@categorias</span>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item bg-pallete1">
+                        <div class="row">
+                            <div class="col-lg-4 px-0">
+                                <b>Tópicos:</b>
+                            </div>
+                            <div class="col-lg-8">
+                                @foreach (var topico in curso.topicos)
+                                {
+                                    <span class="badge bg-pallete2" style="font-size: 90%">@topico</span>
+                                }
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div style="float: right;">
+                    <br><br>
+                    @if (ComunidadPractica.Controllers.SesionController.existeSesion(HttpContext.Current))
+                    {
+                        var modelo = ComunidadPractica.Controllers.SesionController.obtenerModeloSesionUsuario(HttpContext.Current);
+                        if (modelo.correo == curso.educador)
+                        {
+                            <a class="btn btn-dark" href="@Url.Action("materialCompletado", "Curso", new { @nombreCurso = Tokenizador.TokenizarHilera(curso.nombre), @version = curso.version })">Ver Progreso</a>
+                            if (curso.version == ComunidadPractica.Handlers.CursoHandler.obtenerUltimaVersion(curso.nombre))
+                            {
+                                <a class="btn btn-dark" href="@Url.Action("editarCurso", "Curso", new { @nombreCurso = Tokenizador.TokenizarHilera(curso.nombre), @version = curso.version })">Editar</a>
+                            }
+                        }
+                        else if (ComunidadPractica.Handlers.CursoHandler.perteneceCurso(modelo.correo, curso.nombre))
+                        {
+                            <a class="btn btn-dark" href="@Url.Action("verCurso", "Curso", new { @nombreCurso = Tokenizador.TokenizarHilera(curso.nombre), @version = curso.version })">Ver curso</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-dark" href="@Url.Action("inscribirmeEnCurso","Curso", new {nombreCurso = Tokenizador.TokenizarHilera(curso.nombre) } )">Inscribirme</a>
+                            <a class="btn btn-dark" href="@Url.Action("verCurso", "Curso", new { @nombreCurso = Tokenizador.TokenizarHilera(curso.nombre), @version = curso.version })">Ver curso</a>
+                        }
+                    }
+                    else
+                    {
+                        <a class="btn btn-dark" href="@Url.Action("inscribirmeEnCurso","Curso", new {nombreCurso = Tokenizador.TokenizarHilera(curso.nombre) } )">Inscribirme</a>
+                        <a class="btn btn-dark" href="@Url.Action("verCurso", "Curso", new { @nombreCurso = Tokenizador.TokenizarHilera(curso.nombre), @version = curso.version })">Ver curso</a>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    ViewBag.cardNumber += 1;
+
+}
+@if(Model.Count == 0){
+<div>
+	<div style="width: 100%">
+		<br><br><br>
+		<h5> No hay datos que mostrar para esos filtros</h5>
+		<br><br><br>
+	</div>
+</div>
+}

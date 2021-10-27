@@ -1,0 +1,99 @@
+﻿@model ComunidadPractica.Models.EncuestaModel
+@{ ViewBag.Title = "Crear una Encuesta"; }
+
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6 mx-auto text-left">
+				<h1>@ViewBag.Title</h1>
+				@if (ViewBag.Error.Length > 1)
+				{
+					<h5 class="text-success"> @ViewBag.Error</h5>
+				}
+				@using (Html.BeginForm("crearEncuesta", "Encuesta", FormMethod.Post))
+				{
+					@Html.LabelFor(model => model.titulo)
+					@Html.TextBoxFor(model => model.titulo, new { @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.titulo, "", new { @class = "text-danger" })
+					<br>
+					@Html.LabelFor(model => model.fechaCierre)
+					@Html.TextBoxFor(model => model.fechaCierre, new { type = "date", @class = "form-control" })
+					@Html.ValidationMessageFor(model => model.fechaCierre, null, new { @class = "text-danger" })
+					<br>
+					@Html.LabelFor(model => model.categorias)
+					<br>
+					<select id="categorias" class="mul-select actualizar" data-val="true" data-val-required="Por favor agregar al menos una categoría." name="categorias" multiple="multiple" style="width:280px">
+						@foreach (string categoria in ViewBag.Categorias)
+						{
+							<option value=@categoria>@categoria</option>
+						}
+					</select>
+					<br>
+					@Html.ValidationMessageFor(model => model.categorias, "", new { @class = "text-danger" })
+					<br>
+					@Html.LabelFor(model => model.topicos)
+					<br>
+					<select id="topicos" class="mul-select" data-val="true" data-val-required="Por favor agregar al menos un tópico." name="topicos" multiple="multiple" style="width:280px">
+						@foreach (string topico in ViewBag.Topicos)
+						{
+							<option value=@topico>@topico</option>
+						}
+					</select>
+					<br>
+					@Html.ValidationMessageFor(model => model.topicos, "", new { @class = "text-danger" })
+					<br><br>
+					<input type="submit" class="btn btn-dark" value="Crear Encuesta"/>
+				}
+				<hr>
+			</div>
+		</div>
+	</div>
+
+	 <script>
+        $(document).ready(function () {
+            $(".mul-select").select2({
+                placeholder: "- Sin selección -",
+                tokenSeparators: ['/', ',', ';', " "]
+            });
+        });
+    </script>
+	 <script>
+        $('.actualizar').change(function () {
+            var values = $('.actualizar').find('option:selected').map(function () {
+                return $(this).val()
+            }).get();
+
+            let list = null;
+            for (let i = values.length - 1; i >= 0; i--) {
+                list = { value: values[i], rest: list };
+            }
+
+            $.ajax({
+                url: '@Url.Action("obtenerCategorias", "Encuesta")',
+                type: "POST",
+                data: { 'categorias': values },
+                cache: false,
+                success: function (data) {
+
+                    var select = document.getElementById("topicos");
+                    var length = select.options.length;
+                    for (i = length - 1; i >= 0; i--) {
+                        select.options[i] = null;
+                    }
+
+                    var ddldist = $('#topicos');
+                    $.each(data, function (val, text) {
+                        ddldist.append(
+                            $('<option></option>').val(text).html(text)
+                        );
+                    });
+                },
+            });
+        });
+	 </script>
+
+</body>
+</html>

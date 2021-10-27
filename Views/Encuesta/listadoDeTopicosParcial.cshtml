@@ -1,0 +1,14 @@
+﻿@model List<string>
+<div id="filtrarPorTopico" class="dropdown">
+	<button style="width: 200px;" class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		Todos
+	</button>
+	<ul class="dropdown-menu scrollable-menu" aria-labelledby="dropdownMenuButton">
+		<li><a class="dropdown-item" href="#" value="Todas">Todos</a></li>
+		<li class="dropdown-divider"></li>
+		@foreach (string topico in Model)
+		{
+			<li><a class="dropdown-item" href="#" value=@topico>@topico</a></li>
+		}
+	</ul>
+</div>

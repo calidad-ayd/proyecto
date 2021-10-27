@@ -1,0 +1,478 @@
+﻿@model ComunidadPractica.Models.CursoModel
+
+<div id="datos" style="display: none">
+</div>
+
+@for (int seccion = 0; seccion < Model.secciones.Count; seccion++)
+{
+	<div class="seccion" id="seccion_@seccion" value="@seccion">
+		<!-- Borde de seccion -->
+        <div class="card bg-pallete5" style="padding: 0;">
+            <!-- Boton de seccion -->
+            <div id="seccion_btn_@seccion" class="btn card-header collapsed color-pallete1" onclick="expandirSeccion(@seccion)">
+                <p>
+                    <h5><b id="Titulo_@seccion">@Model.secciones[seccion].nombre</b></h5>
+                </p>
+            </div>
+            
+            <!-- Contenido de seccion -->
+            <div class="colapsable" id="seccionCollapse_@seccion">
+                <div class="card-body bg-pallete1">
+                    <div class="row">
+                        <h5 class="col-md-4 col-form-label">
+                            <b>@Html.LabelFor(model => model.secciones[seccion].nombre, new { @class = "text-left" })</b>
+                        </h5>
+                        <div class="col-md-8">
+                            <input class="form-control" id="secciones_@(seccion)__nombre" name="secciones[@(seccion)].nombre" onchange="cambiarTitulo('secciones_@(seccion)__nombre','Titulo_@(seccion)')" required="required" type="text" style="max-width:100%" value="@Model.secciones[seccion].nombre">
+                            <b><label class="text-danger" for="secciones_@(seccion)__nombre"></label></b>
+                        </div>
+                        <h5 class="col-md-4 col-form-label">
+                            <b>@Html.LabelFor(model => model.secciones[seccion].descripcion)</b>
+                        </h5>
+                        <div class="col-md-8">
+                            @Html.TextBoxFor(model => model.secciones[seccion].descripcion, new { @required = "required", @class = "form-control", @style = "max-width: 100%" })
+                            <b><label class="text-danger" for="secciones_@(seccion)__descripcion"></label></b>
+                        </div>
+                    </div>
+
+                    <div style="float: right;">
+                        <a href="javascript:void(0)" id="eliminarSeccion" onclick="eliminarSeccion('seccion_@seccion')" class="btn btn-danger">Eliminar Sección</a>
+                        <a href="javascript:void(0)" id="agregarMaterial" onclick="agregarMaterialB(@seccion, @Model.secciones[seccion].materiales.Count)" class="btn btn-dark"> Agregar nuevo material	</a>
+                    </div>
+                    <br><br>
+
+                    <div id="materiales_@seccion">
+                        @for (int material = 0; material < Model.secciones[seccion].materiales.Count; material++)
+                        {
+                            <div class="material" id="material_@(seccion)_@material" value="@material">
+                                <!-- Borde de material -->
+                                <div class="card bg-pallete5" style="padding: 0;">
+                                    <!-- Boton de material -->
+                                    <div type="button" class="btn card-header collapsed color-pallete1" id="material_btn_@(seccion)_@material" onclick="expandirMaterial(@seccion, @material)">
+                                        <p>
+                                            <h6><b id="Titulo_@(seccion)_@material">@Model.secciones[seccion].materiales[material].nombre</b></h6>
+                                        </p>
+                                    </div>
+
+                                    <!-- Contenido de material -->
+                                    <div class="colapsable bg-pallete1" id="materialCollapse_@(seccion)_@(material)" style="display:none">
+                                        <div class="card-body ">
+                                            <div class="row">
+                                                <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[seccion].materiales[material].nombre, new { @class = "text-left" })</b></h5>
+                                                <div class="col-md-8">
+                                                    <input class="form-control" id="secciones_@(seccion)__materiales_@(material)__nombre" name="secciones[@seccion].materiales[@material].nombre" onchange="cambiarTitulo('secciones_@(seccion)__materiales_@(material)__nombre','Titulo_@(seccion)_@(material)')" required="required" type="text" style="max-width:100%" value="@Model.secciones[seccion].materiales[material].nombre">
+                                                    <b><label class="text-danger" for="secciones_@(seccion)__materiales_@(material)__nombre"></label></b>
+                                                </div>
+                                                <br>
+                                                <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[seccion].materiales[material].descripcion, new { @class = "text-left" })</b></h5>
+                                                <div class="col-md-8">
+                                                    @Html.TextBoxFor(model => model.secciones[seccion].materiales[material].descripcion, new { @required = "required", @class = "form-control", @style = "max-width: 100%" })
+                                                    <b><label class="text-danger" for="secciones_@(seccion)__materiales_@(material)__descripcion"></label></b>
+                                                </div>
+                                                <br>
+                                            </div>
+
+                                            @{
+                                                var opcion1 = "";
+                                                var display1 = "";
+                                                var opcion2 = "";
+                                                var display2 = "";
+                                                if (String.IsNullOrEmpty(Model.secciones[seccion].materiales[material].link))
+                                                {
+                                                    opcion1 = "selected";
+                                                    display2 = "display: none;";
+                                                }
+                                                else
+                                                {
+                                                    opcion2 = "selected";
+                                                    display1 = "display: none;";
+                                                }
+                                            }
+                                            <div class="row">
+                                                <h5 class="text-left col-md-4 col-form-label" for="secciones_@(seccion)_materiales_@(material)_fileType"><b>Tipo de material</b></h5>
+                                                <div class="col-md-8" style="max-width:100%">
+                                                    <select onload="cambiarTipoArchivo(@seccion, @material, this)" onchange="cambiarTipoArchivo(@seccion, @material, this)" style="width:100%" class="form-control" id="secciones_@(seccion)_materiales_@(material)_fileType">
+                                                        <option value="0"> - Seleccione - </option>
+                                                        <option value="1" @opcion1>Archivo</option>
+                                                        <option value="2" @opcion2>Hipervínculo</option>
+                                                    </select>
+                                                    <b><label class="text-danger" for="secciones_@(seccion)_materiales_@(material)_fileType"></label></b>
+                                                </div>
+                                                <br>
+                                            </div>
+
+                                            <div id="secciones_@(seccion)_materiales_@(material)_showFile" style="@display1">
+                                                <div class="row">
+                                                    <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[seccion].materiales[material].file, new { @class = "text-left" })</b></h5>
+                                                    <div class="col-md-8" style="max-width:100%">
+                                                        <input data-seccion="@seccion" data-material="@material" type="text" class="form-control text-left path" name="secciones[@seccion].materiales.[@material].path" id="secciones_@(seccion)__materiales_@(material)__path" style="display: inline-block;" value="@Path.GetFileName(Model.secciones[seccion].materiales[material].path)" readonly />
+                                                        @Html.TextBoxFor(model => model.secciones[seccion].materiales[material].path, new { @class = "form-control", @style = "display:none; max-width: 100%" })
+                                                        <div class="fileUpload btn btn-dark" style="display:inline-block;">
+                                                            <span>Subir Archivo</span>
+                                                            <input onchange="actualizarNombreArchivo(@seccion, @material, this);" name="secciones[@seccion].materiales[@material].file" id="secciones_@(seccion)__materiales_@(material)__file" type="file" class="upload" />
+                                                        </div>
+                                                        <b><label class="text-danger" for="secciones_@(seccion)__materiales_@(material)__path"></label></b>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="secciones_@(seccion)_materiales_@(material)_showLink" style="@display2">
+                                                <div class="row">
+                                                    <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[seccion].materiales[material].link, new { @class = "text-left" })</b></h5>
+                                                    <div class="col-md-8">
+                                                        @Html.TextBoxFor(model => model.secciones[seccion].materiales[material].link, new { @type = "url", @class = "form-control", @style = "max-width: 100%", @data_seccion = seccion, @data_material = material })<br />
+                                                        <b><label class="text-danger" for="secciones_@(seccion)__materiales_@(material)__link"></label></b>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <br>
+
+                                            <div style="float: right;">
+                                                <a class="btn btn-danger" href="javascript:void(0)" id="eliminarMaterial" onclick="eliminarMaterial('material_@(seccion)_@(material)')"> Eliminar Material	</a>
+                                            </div>
+                                            <br><br>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+}
+
+<div id="datosTemplate" style="display: none">
+    @Html.TextBoxFor(model => model.nombre, new { @class = "form-control" })
+    @Html.TextBoxFor(model => model.version, new { @class = "form-control" })
+    @Html.TextBoxFor(model => model.educador, new { @class = "form-control" })
+    @Html.TextBoxFor(model => model.estado, new { @class = "form-control", @type = "number" })
+    @Html.TextBoxFor(model => model.costo, new { @class = "form-control", @type = "number" })
+    @Html.TextAreaFor(model => model.descripcion, new { @class = "form-control" })
+    @Html.TextAreaFor(model => model.contenidos, new { @class = "form-control contenidos" })
+</div>
+
+<div id="seccionTemplate" style="display: none">
+    <!-- Lo que se clona(nueva seccion) -->
+    <div class="seccion" id="seccion_NUMERO_SECCION" value="NUMERO_SECCION">
+        <!-- Borde de seccion -->
+        <div class="card bg-pallete5" style="padding: 0;">
+            <!-- Boton de seccion -->
+            <div id="seccion_btn_NUMERO_SECCION" class="btn card-header collapsed color-pallete1" onclick="expandirSeccion(NUMERO_SECCION)">
+                <p>
+                    <h5><b id="Titulo_NUMERO_SECCION">Nueva Sección</b></h5>
+                </p>
+            </div>
+            <!-- Contenido de seccion -->
+            <div class="colapsable" id="seccionCollapse_NUMERO_SECCION" style="display:none">
+                <div class="card-body bg-pallete1">
+                    <div class="row">
+                        <h5 class="col-md-4 col-form-label">
+                            <b>@Html.LabelFor(model => model.secciones[0].nombre, new { @for = "items_NUMERO_SECCION__nombre", @style = "max-width: 100%" })</b>
+                        </h5>
+                        <div class="col-md-8">
+                            @Html.TextBox("secciones[NUMERO_SECCION].nombre", "",
+                                 new
+                                 {
+                                     @required = "required",
+                                     @class = "form-control",
+                                     @id = "secciones_NUMERO_SECCION__nombre",
+                                     @value = "Sección SECCION_TITULO",
+                                     @onchange = "cambiarTitulo(\"secciones_NUMERO_SECCION__nombre\",\"Titulo_NUMERO_SECCION\")",
+                                     @style = "max-width: 100%"
+                                 })
+                            <b><label class="text-danger" for="secciones_NUMERO_SECCION__nombre"></label></b>
+                        </div>
+                        <h5 class="col-md-4 col-form-label">
+                            <b>@Html.LabelFor(model => model.secciones[0].descripcion, new { @for = "items_NUMERO_SECCION__descripcion", @style = "max-width: 100%" })</b>
+                        </h5>
+                        <div class="col-md-8">
+                            @Html.TextBox("secciones[NUMERO_SECCION].descripcion", "", new { @required = "required", @class = "form-control", @id = "secciones_NUMERO_SECCION__descripcion", @style = "max-width: 100%" })
+                            <b><label class="text-danger" for="secciones_NUMERO_SECCION__descripcion"></label></b>
+                        </div>
+                    </div>
+
+                    <div style="float: right;">
+                        <a href="javascript:void(0)" id="eliminarSeccion" onclick="eliminarSeccion('seccion_NUMERO_SECCION')" class="btn btn-danger">Eliminar Sección</a>
+                        <a href="javascript:void(0)" id="agregarMaterial" onclick="agregarMaterial(NUMERO_SECCION)" class="btn btn-dark"> Agregar nuevo material	</a>
+                    </div>
+                    <br><br>
+
+                    <!-- div contenedor de Materiales -->
+                    <div id="materiales_NUMERO_SECCION">
+                    </div>
+                    <div style="text-align:center">
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="materialTemplate" style="display: none">
+    <!-- Lo que se clona(nuevo material) -->
+    <div class="material" id="material_NUMERO_SECCION_NUMERO_MATERIAL" value="NUMERO_MATERIAL">
+        <!-- Borde de material -->
+        <div class="card bg-pallete5" style="padding: 0;">
+            <!-- Boton de material -->
+            <div type="button" class="btn card-header collapsed color-pallete1" id="heading_NUMERO_SECCION_NUMERO_MATERIAL" onclick="expandirMaterial(NUMERO_SECCION, NUMERO_MATERIAL)">
+                <p>
+                    <h6><b id="Titulo_NUMERO_SECCION_NUMERO_MATERIAL">Nuevo Material</b></h6>
+                </p>
+            </div>
+            <!-- Contenido de material -->
+            <div class="colapsable bg-pallete1" id="materialCollapse_NUMERO_SECCION_NUMERO_MATERIAL" style="display:none">
+                <div class="card-body ">
+                    <div class="row">
+                        <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].nombre, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre", @style = "max-width: 100%" })</b></h5>
+                        <div class="col-md-8">
+                            @Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].nombre", "",
+                            new
+                            {
+                                @required = "required",
+                                @class = "form-control text-left",
+                                @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre",
+                                @style = "max-width: 100%",
+                                @onchange = "cambiarTitulo(\"secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre\", \"Titulo_NUMERO_SECCION_NUMERO_MATERIAL\")",
+                                @value = "Material MATERIAL_TITULO"
+                            })
+                            <b><label class="text-danger" for="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__nombre"></label></b>
+                        </div>
+
+                        <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].descripcion, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__descripcion", @style = "max-width: 100%" })</b></h5>
+                        <div class="col-md-8">
+                            @Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].descripcion", "", new { @required = "required", @class = "form-control text-left", @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__descripcion", @style = "max-width: 100%" })
+                            <b><label class="text-danger" for="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__descripcion"></label></b>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <h5 class="text-left col-md-4 col-form-label" for="secciones_NUMERO_SECCION_materiales_NUMERO_MATERIAL_fileType"><b>Tipo de material</b> </h5>
+                        <div class="col-md-8" style="max-width:100%">
+                            <select onchange="cambiarTipoArchivo(NUMERO_SECCION, NUMERO_MATERIAL, this)" style="width:100%" class="form-control" id="secciones_NUMERO_SECCION_materiales_NUMERO_MATERIAL_fileType">
+                                <option value="0"> - Seleccione - </option>
+                                <option value="1">Archivo</option>
+                                <option value="2">Hipervínculo</option>
+                            </select>
+                            <b><label class="text-danger" for="secciones_NUMERO_SECCION_materiales_NUMERO_MATERIAL_fileType"></label></b>
+                        </div>
+                        <br>
+                    </div>
+
+                    <div id="secciones_NUMERO_SECCION_materiales_NUMERO_MATERIAL_showFile" style="display: none;">
+                        <div class="row">
+                            <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].file, new { @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__file", @style = " max-width: 100%" })</b></h5>
+                            <div class="col-md-8" style="max-width:100%">
+                                <input data-seccion="NUMERO_SECCION" data-material="NUMERO_MATERIAL" type="text" class="form-control text-left path" name="secciones[NUMERO_SECCION].materiales.[NUMERO_MATERIAL].path" id="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__path" style="display: inline-block;" placeholder="Seleccione un archivo . . . " readonly />
+                                <div class="fileUpload btn btn-dark" style="display:inline-block;">
+                                    <span>Subir Archivo</span>
+                                    <input onchange="actualizarNombreArchivo(NUMERO_SECCION, NUMERO_MATERIAL, this);" name="secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].file" id="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__file" type="file" class="upload" />
+                                </div><br>
+                                <b><label class="text-danger" for="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__path"></label></b>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="secciones_NUMERO_SECCION_materiales_NUMERO_MATERIAL_showLink" style="display: none;">
+                        <div class="row">
+                            <h5 class="col-md-4 col-form-label"><b>@Html.LabelFor(model => model.secciones[0].materiales[0].link, new { @class = "text-left", @for = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__link", @style = "max-width: 100%" })</b></h5>
+                            <div class="col-md-8">
+                                @Html.TextBox("secciones[NUMERO_SECCION].materiales[NUMERO_MATERIAL].link", "",
+                                new { data_seccion = "NUMERO_SECCION", data_material = "NUMERO_MATERIAL", @class = "form-control text-left", @id = "secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__link", @style = "max-width: 100%" })
+                                <b><label class="text-danger" for="secciones_NUMERO_SECCION__materiales_NUMERO_MATERIAL__link"></label></b>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div style="float: right;">
+                        <a class="btn btn-danger" href="javascript:void(0)" id="eliminarMaterial" onclick="eliminarMaterial('material_NUMERO_SECCION_NUMERO_MATERIAL')"> Eliminar Material	</a>
+                    </div>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		$(".mul-select").select2({
+			placeholder: "- Sin selección -",
+			tokenSeparators: ['/', ',', ';', " "],
+		});
+	});
+
+	function validarEntrada() {
+
+		var errores = 0;
+
+        $(".colapsable").show();
+
+        // Valida que selecciona una opcion del select
+        $('#secciones').find('select').each(function () {
+            var id = $(this).attr('id');
+            var selected = $(this).children("option:selected").val();
+            var label = $("label.text-danger[for='" + id + "']");
+
+            var material = $(this).closest('.material').attr('value');
+            var seccion = $(this).closest('.seccion').attr('value');
+
+            if (selected == '0') {
+                errores++;
+                label.text('Debe marcar una opción.');
+            } else if (selected == '1') {
+                //resetea el estado del campo link
+                $('#secciones_' + seccion + '__materiales_' + material + '__link').val('');
+            } else if (selected == '2') {
+                //resetea el estado del campo archivo
+                $('#secciones_' + seccion + '__materiales_' + material + '__path').val('');
+                $('#secciones_' + seccion + '__materiales_' + material + '__file').val('');
+            } else {
+                label.text('');
+            }
+
+        });
+
+		// Para cada seccion valide todo campo de texto
+		$('#secciones').find('input[type="text"]').each(function () {
+			// Obtiene el ID y el LABEL asociado al input actual
+			var id = $(this).attr('id');
+			var label = $("label.text-danger[for='" + id + "']");
+
+            if ($(this).val().length < 1) {
+                // Caso especial para validar tipo de material particular
+                var seccion = $(this).attr('data-seccion');
+                var material = $(this).attr('data-material');
+                var tipoArchivoID = '#secciones_' + seccion + '_materiales_' + material + '_fileType';
+                var tipoArchivo = $(tipoArchivoID).val();
+
+                if (id.indexOf('_path') >= 0) {
+                    if (tipoArchivo == '1') {
+                        label.text('Tiene que subir un archivo.');
+                        errores++;
+                    }
+                } else if (id.indexOf('_link') >= 0) {
+                    if (tipoArchivo == '2') {
+                        label.text('Tiene que escribir una URL valida.');
+                        errores++;
+                    }
+                } else {
+                    label.text('Este campo es requerido.');
+                    errores++;
+                }
+            } else {
+                // limpiar errores
+                label.text('');
+            }
+		});
+
+        if (errores == 0) {
+            agregarDatos();
+            document.getElementById("submit").click();
+		}
+	}
+
+    function cambiarTitulo(textoID, tituloID) {
+		$("#" + tituloID).html($("#" + textoID).val());
+	}
+
+    function expandirSeccion(seccion) {
+		id = 'seccionCollapse_' + seccion;
+		if (document.getElementById(id).style.display == 'none') {
+			$('#' + id).show();
+		} else {
+			$('#' + id).hide();
+		}
+	}
+
+    function expandirMaterial(seccion, material) {
+		id = 'materialCollapse_' + seccion + "_" + material;
+		if (document.getElementById(id).style.display == 'none') {
+			$('#' + id).show();
+		} else {
+			$('#' + id).hide();
+		}
+	}
+
+	var numeroSeccion = parseInt(@Model.secciones.Count);
+	var numeroMaterial = [];
+
+    var datosTemplate = $('#datosTemplate');
+    var seccionTemplate = $('#seccionTemplate');
+	var materialTemplate = $('#materialTemplate');
+
+    document.getElementById("datosTemplate").remove();
+    document.getElementById("seccionTemplate").remove();
+    document.getElementById("materialTemplate").remove();
+
+    function agregarDatos() {
+        var datos = datosTemplate.clone();
+        $('#datos').append(datos.html());
+    }
+
+	function agregarSeccion() {
+        var clone = seccionTemplate.clone();
+
+		clone.html($(clone).html().replace(/NUMERO_SECCION/g, numeroSeccion));
+
+		clone.html($(clone).html().replace(/SECCION_TITULO/g, (numeroSeccion + 1)));
+		$('#secciones').append(clone.html());
+		numeroMaterial[numeroSeccion] = 0;
+
+        expandirSeccion(numeroSeccion++);
+	}
+
+	function eliminarSeccion(seccionID) {
+		document.getElementById(seccionID).remove();
+	}
+
+	function agregarMaterial(seccion) {
+        var clone = materialTemplate.clone();
+
+		clone.html($(clone).html().replace(/NUMERO_MATERIAL/g, numeroMaterial[seccion]));
+		clone.html($(clone).html().replace(/MATERIAL_TITULO/g, (numeroMaterial[seccion] + 1)));
+		clone.html($(clone).html().replace(/NUMERO_SECCION/g, seccion));
+
+		$('#materiales_' + seccion).append(clone.html());
+		id = "heading_" + numeroMaterial[seccion] + "_" + seccion;
+		numeroMaterial[seccion]++;
+    }
+
+    function agregarMaterialB(seccion, material) {
+        if (typeof numeroMaterial[seccion] === 'undefined') {
+            numeroMaterial[seccion] = material;
+        }
+        agregarMaterial(seccion);
+    }
+
+	function eliminarMaterial(MaterialID) {
+		document.getElementById(MaterialID).remove();
+	}
+
+	function cambiarTipoArchivo(seccion, material, self) {
+		var value = $(self).children("option:selected").val();
+		var seccionLink = '#secciones_' + seccion + '_materiales_' + material + '_showLink';
+		var seccionFile = '#secciones_' + seccion + '_materiales_' + material + '_showFile';
+
+        $(seccionLink).hide();
+        $(seccionFile).hide();
+
+        if (value == '1') {
+            $(seccionFile).show();
+            //$('#secciones_' + seccion + '__materiales_' + material + '__path').val('');
+        } else if (value == '2') {
+            $(seccionLink).show();
+            //$('#secciones_' + seccion + '__materiales_' + material + '__link').val('');
+        }
+    }
+
+	function actualizarNombreArchivo(seccion, material, self) {
+		var partes = self.value.split('\\');
+		$('#secciones_' + seccion + '__materiales_' + material + '__path').val(partes[partes.length - 1]);
+	}
+</script>

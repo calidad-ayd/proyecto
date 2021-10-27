@@ -1,0 +1,88 @@
+﻿@{ ViewBag.Title = "Noticias"; }
+<br><br><br>
+
+<div class="container body-content ">
+
+    <h3 class="display-3"> @ViewBag.Title</h3><br>
+
+    <div class="row">
+
+        @foreach (var noticia in ViewBag.ListadoNoticias)
+		{
+			var fechaSpliteada = noticia.fecha.Split('_');
+			var cuerpoResumido = noticia.cuerpo.Substring(0, 100) + "...";
+            <div class="col-sm-8 col-md-6 col-lg-4">
+                <div class="p-2">
+					<div class="card noticia" style="padding: 0px 0px 0px;">
+
+						@if (noticia.tipoImagen.Length > 1)
+						{
+						    <img class="card-img-top card-img-top-fix" src="../../Content/stored/Noticias/Imagenes/Noticia.@noticia.fecha.@noticia.tipoImagen">
+						}
+						else
+						{
+					        <img class="card-img-top card-img-top-fix" src="../../Content/images/background-home.jpg">
+						}
+						<div class="card-body">
+							<p style="font-size: smaller; text-transform: uppercase;">por @noticia.autor</p>
+							@{
+								var estiloTituloNoticia = "h4";
+								var titulo = (String)noticia.titulo;
+								if (noticia.titulo.Length > 21) {
+									estiloTituloNoticia = "h5";
+								}
+								if (noticia.titulo.Length > 26)
+								{
+									titulo = noticia.titulo.ToString().Substring(0, 24) + "...";
+								}
+								estiloTituloNoticia += " link a - pallete - hover color - pallete5 ";
+							 }
+							@Html.ActionLink(titulo, "verNoticia", "Noticia", new { noticiaID = Tokenizador.TokenizarHilera(noticia.fecha) },
+								 new { @class = estiloTituloNoticia })
+                            <hr>
+							<p class="card-text">@cuerpoResumido</p>
+						    <p style="font-size: smaller">@fechaSpliteada[0]/@fechaSpliteada[1]/@fechaSpliteada[2]</p>
+							@Html.ActionLink("ENTRAR", "verNoticia", "Noticia", new { noticiaID = Tokenizador.TokenizarHilera(noticia.fecha) },
+							new { @class = "btn btn-dark" })
+						</div>
+					</div>
+                </div>
+            </div>
+        }
+            
+        </div>
+        
+        <div class="text-center justify-content-center align-content-center">
+
+            <nav aria-label="Page navigation">
+				<ul class="pagination justify-content-center">
+
+					@{ ViewBag.activarAnterior = "";
+						ViewBag.activarSiguiente = "";
+						if (ViewBag.pagina == 0)
+						{
+							ViewBag.activarAnterior = "disabled";
+						}
+						if (ViewBag.pagina == ViewBag.cantidadPaginas - 1)
+						{
+							ViewBag.activarSiguiente = "disabled";
+						}
+					}
+					<li class="page-item @ViewBag.activarAnterior">
+						<a class="page-link @ViewBag.activarAnterior" href="@Url.Action("listadoDeNoticias", "Miembro", new { pagina = (@ViewBag.pagina - 1) })" aria-label="Anterior">
+							<span aria-hidden="true"> Anterior </span>
+							<span class="sr-only">Anterior</span>
+						</a>
+					</li>
+					<li class="page-item @ViewBag.activarSiguiente">
+						<a class="page-link @ViewBag.activarSiguiente" href="@Url.Action("listadoDeNoticias", "Miembro", new { pagina = (@ViewBag.pagina + 1) })" aria-label="Siguiente">
+							<span aria-hidden="true"> Siguiente </span>
+							<span class="sr-only">Siguiente</span>
+						</a>
+					</li>
+				</ul>
+            </nav>
+
+        </div>
+    </div>
+

@@ -1,0 +1,77 @@
+﻿<!-- Modal de inicio de sesión -->
+<div class="modal fade" id="iniciarSesion" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header text-center" style="border-bottom: none;">
+				<h5 class="modal-title w-100 font-weight-bold my-4">
+					<img src="~/Content/images/brand.png" alt="">
+				</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body mx-4">
+				<h2>INICIAR SESIÓN</h2>
+				<br>
+				<p class="alert-danger" id="mensaje"></p>
+				<form id="formLogin">
+					<div class="input-group flex-nowrap mb-5">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="addon-wrapping"><i class="fas fa-user"></i></span>
+						</div>
+						<input id="loginCorreo" type="text" style="max-width:100%" class="form-control" placeholder="Correo electrónico" aria-label="Username" aria-describedby="addon-wrapping">
+					</div>
+					<div class="input-group flex-nowrap pb-3">
+						<div class="input-group-prepend">
+							<span class="input-group-text" id="addon-wrapping"><i class="fas fa-key"></i></span>
+						</div>
+						<input id="loginPassword" type="password" style="max-width:100%" class="form-control" placeholder="Contraseña" aria-label="Password" aria-describedby="addon-wrapping">
+					</div>
+					<!--<p class="font-small d-flex justify-content-end pb-5">
+						¿Has olvidado la contraseña?
+					</p>-->
+					<br>
+					<button id="sesionBoton" type="submit" class="btn btn-dark" style="width:100%">Iniciar sesión</button>
+				</form>
+				
+			</div>
+			<div class="modal-footer mx-5 pt-3 mb-1">
+				<p class="font-small grey-text d-flex justify-content-end">
+					¿No tienes una cuenta?
+				</p>
+				@Html.ActionLink("Registrarse", "agregarMiembro", "Miembro", null, new { @class = "link" } )
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	$('#formLogin').submit(function (e) {
+
+		e.preventDefault();
+
+		var correo = document.getElementById("loginCorreo").value;
+		var password = document.getElementById("loginPassword").value;
+
+		$.ajax({
+			url: '@Url.Action("iniciarSesion", "Sesion")',
+			type: "POST",
+			data: {
+				'correo': correo,
+				'password': password
+			},
+			cache: true,
+			dataType: 'json',
+			success: function(exito) {
+				console.log(exito);
+				if (exito.returnvalue) {
+					location.reload(true);
+				} else {
+					document.getElementById("mensaje").innerHTML = 'Los datos ingresados no coinciden con ningún miembro';
+				}
+			}
+		});
+
+		return false;
+});
+</script>

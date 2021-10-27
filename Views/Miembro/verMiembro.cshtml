@@ -1,0 +1,713 @@
+﻿@model ComunidadPractica.Mensaje
+@{
+	ViewBag.Title = "Usuario";
+}
+<!doctype html>
+<html lang="en">
+<body>
+	<div class="jumbotron jumbotron-fluid" style="background-size: cover;
+         background-image: url('../../Content/images/background-user.jpg'); min-height: 300px;">
+		<div class="container " style="margin-top:200px;">
+			<h1 class="display-4 title">
+				@Model.miembroModel.nombre
+			</h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="row">
+			<div class="col-2"></div>
+			<div class="col-8">@Html.Partial("Mensaje", Model)</div>
+			<div class="col-2"></div>
+		</div>
+	</div>
+	<main class="flex flex-row ">
+		<section class="card mx-auto mt-lg-5 mb-lg-5" style="max-width: 500px;">
+			<div class="row">
+				<div class="col-9">
+					<h4>Información Básica</h4>
+				</div>
+				@if (ComunidadPractica.Controllers.AutorizacionController.tengoPermiso(HttpContext.Current,
+				ComunidadPractica.Handlers.SesionHandler.Permiso.MiembroEditar)){
+
+					if (Model.miembroModel.correo == ComunidadPractica.Controllers.SesionController.obtenerModeloSesion(HttpContext.Current).correo) { 
+						<div class="col">
+							<button type="button" class="btn btn-dark" data-toggle="modal" data-target="#editarBasico">
+								Editar
+							</button>
+						</div>
+					}
+				}
+				
+			</div>
+			<br>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">
+					<br>
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Nombre Completo:</b>
+						</div>
+						<div class="col-lg-8">
+							@Model.miembroModel.nombre
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Correo electrónico:</b>
+						</div>
+						<div class="col-lg-8">
+							@Model.miembroModel.correo
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Contacto:</b>
+						</div>
+						<div class="col-lg-8">
+							@Model.miembroModel.contacto
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>País:</b>
+						</div>
+						<div class="col-lg-8">
+							@Model.miembroModel.pais
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Sexo:</b>
+						</div>
+						<div class="col-lg-8 text-capitalize">
+							@Model.miembroModel.sexo
+						</div>
+					</div>
+				</li>
+			</ul>
+		</section>
+		<section class="card mx-auto mt-lg-5 mb-lg-5" style="max-width: 500px;">
+			<div class="row">
+				<div class="col-9">
+					<h4>Información Adicional</h4>
+				</div>
+				@if (ComunidadPractica.Controllers.AutorizacionController.tengoPermiso(HttpContext.Current,
+				ComunidadPractica.Handlers.SesionHandler.Permiso.MiembroEditar))
+				{
+
+					if (Model.miembroModel.correo == ComunidadPractica.Controllers.SesionController.obtenerModeloSesion(HttpContext.Current).correo)
+					{
+						<div class="col">
+							<button type="button" class="btn btn-dark" data-toggle="modal" data-target="#editarAdicional">
+								Editar
+							</button>
+						</div>
+					}
+				}
+			</div>
+			<br>
+			<ul class="list-group list-group-flush">
+				<li class="list-group-item">
+					<br>
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Condición laboral:</b>
+						</div>
+						<div class="col-lg-8">
+							@Html.Raw(Model.miembroModel.condicionLaboral)
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Idiomas:</b>
+						</div>
+						<div class="col-lg-8">
+							<ul class="skills">
+								@foreach (var idioma in Model.miembroModel.idiomas)
+								{
+									<li>@idioma</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</li>
+				<li class="list-group-item">
+					<div class="row">
+						<div class="col-lg-4 px-0">
+							<b>Habilidades:</b>
+						</div>
+						<div class="col-lg-8">
+							<ul class="skills">
+								@foreach (var habilidad in Model.miembroModel.habilidades)
+								{
+									<li>@habilidad</li>
+								}
+							</ul>
+						</div>
+					</div>
+				</li>
+			</ul>
+		</section>
+	</main>
+
+	<div class="modal fade" id="editarBasico" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">Editar información básica</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Cancelar cambios">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				@using (Html.BeginForm("actualizarMiembroInformacionBasica", "Miembro", null, FormMethod.Post,
+				new { @class = "form-horizontal", style = "display: inline-block;", id= "formInformacionBasica", enctype = "multipart/form-data" }))
+				{
+					<div class="modal-body">
+						<div class="form-group row">
+							<label for="miembroModel_nombre" class="col-sm-5 col-form-label text-left">Nombre completo:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" name="miembroModel.nombre" id="miembroModel_nombre" value="@Model.miembroModel.nombre">
+								<label class="text-danger" id="error_nombre"></label>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="miembroModel_contacto" class="col-sm-5 col-form-label text-left">Contacto:</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" name="miembroModel.contacto" id="miembroModel_contacto" value="@Model.miembroModel.contacto">
+								<label class="text-danger" id="error_contacto"></label>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="miembroModel_correo" class="col-sm-5 col-form-label text-left">Correo electrónico:</label>
+							<div class="col-sm-7">
+								<input readonly type="text" class="form-control" name="miembroModel.correo" id="miembroModel_correo" value="@Model.miembroModel.correo">
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="pais" class="col-sm-5 col-form-label text-left">País:</label>
+							<div class="col-sm-7">
+								@Html.DropDownListFor(model => model.miembroModel.pais, (List<SelectListItem>)
+								ViewBag.Paises, null, new { @class = "form-control", @style = "max-width:100%;" })
+								<label class="text-danger" id="error_pais"></label>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="sexo" class="col-sm-5 col-form-label text-left">Sexo:</label>
+							<div class="col-sm-7">
+								@Html.DropDownListFor(model => model.miembroModel.sexo, (List<SelectListItem>)
+								ViewBag.Generos, null, new { @class = "form-control", @style = "max-width:100%;" })
+								<label class="text-danger" id="error_sexo"></label>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar cambios</button>
+						<button type="submit" class="btn btn-dark">Guardar cambios</button>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="editarAdicional" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalCenterTitle">Editar información adicional</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				@using (Html.BeginForm("actualizarMiembroInformacionAdicional", "Miembro", null, FormMethod.Post,
+				new { @class = "form-horizontal", style = "display: inline-block;", id = "formInformacionAdicional", enctype = "multipart/form-data" }))
+				{
+					<input type="hidden" class="form-control" name="miembroModel.correo" id="miembroModel_correo" value="@Model.miembroModel.correo">
+					<div class="modal-body">
+						<div class="form-group row">
+							<label for="nombre" class="col-sm-5 col-form-label text-left">Condición Laboral:</label>
+							<div class="col-sm-7">
+								@Html.DropDownListFor(model => model.miembroModel.condicionLaboral, (List<SelectListItem>)
+								ViewBag.CondicionesLaborales, null, new { @class = "form-control", @style = "max-width:100%;" })
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="miembroModel_idiomas" class="col-sm-5 col-form-label text-left">Idiomas:</label>
+							<div class="col-sm-7">
+								<select id="miembroModel_idiomas" class="mul-select" data-val="true" name="miembroModel.idiomas" multiple="multiple" style="width:100%">
+									@{
+										var idiomasRegistrados = new List<string>();
+									}
+									@foreach (string idioma in Model.miembroModel.idiomas)
+									{
+										if (!idiomasRegistrados.Contains(idioma))
+										{
+											<option selected value="@idioma">@idioma</option>
+										}
+									}
+									@foreach (string idioma in ComunidadPractica.Constantes.obtenerListadoIdiomas())
+									{
+										if (!idiomasRegistrados.Contains(idioma))
+										{
+											<option value="@idioma">@idioma</option>
+										}
+									}
+								</select>
+								<label class="text-danger" id="error_idiomas"></label>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label for="miembroModel_habilidades" class="col-sm-5 col-form-label text-left">Habilidades:</label>
+							<div class="col-sm-7">
+								<select id="miembroModel_habilidades" class="mul-select" data-val="true" name="miembroModel.habilidades" multiple="multiple" style="width:100%">
+									@{
+										var habilidadesRegistrados = new List<string>();
+									}
+									@foreach (string habilidad in Model.miembroModel.habilidades)
+									{
+										if (!habilidadesRegistrados.Contains(habilidad))
+										{
+											<option selected value="@habilidad">@habilidad</option>
+										}
+									}
+									@foreach (string habilidad in ComunidadPractica.Constantes.obtenerListadoHabilidades())
+									{
+										if (!habilidadesRegistrados.Contains(habilidad))
+										{
+											<option value="@habilidad">@habilidad</option>
+										}
+									}
+								</select>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar cambios</button>
+						<button type="submit" class="btn btn-dark">Guardar cambios</button>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+	<script>
+		$(document).ready(function () {
+			$(".mul-select").select2({
+				minimumInputLength: 1,
+				placeholder: "- Sin selección -",
+				tokenSeparators: ['/', ',', ';', " "]
+			});
+		});
+
+		$('#formInformacionBasica').submit(function () {
+
+			var errores = 0;
+
+			$("#error_nombre").text("");
+			$("#error_contacto").text("");
+			$("#error_pais").text("");
+			$("#error_sexo").text("");
+
+			if ($("#miembroModel_nombre").val().length < 2) {
+				$("#error_nombre").text("Debe ingresar un nombre real");
+				errores++;
+			}
+
+			if ($("#miembroModel_contacto").val().length < 5) {
+				$("#error_contacto").text("Debe ingresar un teléfono válido");
+				errores++;
+			}
+			if ($("#miembroModel_pais").val() == " - Sin Selección - ") {
+				$("#error_pais").text("Debe seleccionar un pais");
+				errores++;
+			}
+
+			return (errores == 0);
+		});
+
+		$('#formInformacionAdicional').submit(function () {
+
+			var errores = 0;
+
+			if ($('#miembroModel_idiomas').get(0).selectedIndex == -1) {
+				$("#error_idiomas").text("Debe seleccionar un idioma");
+				errores++;
+			}
+
+			return (errores == 0);
+
+		});
+
+
+
+	</script>
+
+
+    <!-- Tabs -->
+    <section id="tabs">
+        <div class="container" style="max-width:100%">
+            <div class="row">
+                <div class="col-lg-12 ">
+                    <nav>
+                        <div class="nav nav-tabs justify-content-center" id="nav-tab" role="tablist">
+                            <a class="nav-item nav-link active color-pallete2" id="perfiles-similares-tab" data-toggle="tab" href="#perfiles-similares" role="tab" aria-controls="perfiles-similares" aria-selected="true">Otros miembros similares</a>
+                            @if (ComunidadPractica.Controllers.AutorizacionController.tengoPermiso(HttpContext.Current,
+                            ComunidadPractica.Handlers.SesionHandler.Permiso.MiembroEditar))
+                            {
+                                if (Model.miembroModel.correo == ComunidadPractica.Controllers.SesionController.obtenerModeloSesion(HttpContext.Current).correo)
+                                {
+                                    <a class="nav-item nav-link color-pallete2" id="habilidades-similares-tab" data-toggle="tab" href="#habilidades-similares" role="tab" aria-controls="habilidades-similares" aria-selected="false">Miembros con habilidades similares</a>
+                                }
+                            }
+                            </div>
+                    </nav>
+                    <div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="perfiles-similares" role="tabpanel" aria-labelledby="perfiles-similares-tab">
+
+                            <div id="carouselPerfilesSimilares" class="carousel slide" data-ride="false" data-wrap="false">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = 0; i < ViewBag.cantPerfiles / 3; ++i)
+                                            {
+                                                <div class="card" style="width: 20%;">
+                                                    <div class="d-flex " style="align-items: center;">
+                                                        <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesSimilares[i].nombre </h4>
+                                                        <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesSimilares[i].correo) })">
+                                                            <i class="p-2 fas fa-sign-in-alt fa-lg color-pallete6 mb-2"></i>
+                                                        </a>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].correo</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-flag fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].pais</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-language fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                var cantidad = ViewBag.perfilesSimilares[i].idiomas.Count - 1;
+                                                                var idiomas = "";
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[j] + " - ";
+                                                                    @idiomas
+                                                                }
+                                                                if (cantidad >= 0)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[cantidad];
+                                                                    @idiomas
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                cantidad = ViewBag.perfilesSimilares[i].habilidades.Count - 1;
+                                                                var habilidades = "";
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[j] + " - ";
+                                                                    @habilidades
+                                                                }
+                                                                if (cantidad >= 0)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[cantidad];
+                                                                    @habilidades
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = ViewBag.cantPerfiles / 3; i < ViewBag.cantPerfiles * 2 / 3; ++i)
+                                            {
+                                                <div class="card" style="width: 20%;">
+                                                    <div class="d-flex">
+                                                        <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesSimilares[i].nombre </h4>
+                                                        <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesSimilares[i].correo) })">
+                                                            <i class="p-2 fas fa-sign-in-alt fa-lg  color-pallete6 mb-2"></i>
+                                                        </a>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].correo</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-flag fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].pais</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-language fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                var cantidad = ViewBag.perfilesSimilares[i].idiomas.Count -1;
+                                                                var idiomas = "" ;
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[j] + " - ";
+                                                                    @idiomas
+                                                                }
+                                                                if(cantidad >= 0)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[cantidad];
+                                                                    @idiomas
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                cantidad = ViewBag.perfilesSimilares[i].habilidades.Count - 1;
+                                                                var habilidades = "";
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[j] + " - ";
+                                                                    @habilidades
+                                                                }
+                                                                if (cantidad >= 0)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[cantidad];
+                                                                    @habilidades
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = ViewBag.cantPerfiles * 2 / 3; i < ViewBag.cantPerfiles; ++i)
+                                            {
+                                                <div class="card" style="width: 20%;">
+                                                    <div class="d-flex">
+                                                        <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesSimilares[i].nombre </h4>
+                                                        <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesSimilares[i].correo) })">
+                                                            <i class="p-2 fas fa-sign-in-alt fa-lg  color-pallete6 mb-2"></i>
+                                                        </a>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].correo</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-flag fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesSimilares[i].pais</p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-language fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                var cantidad = ViewBag.perfilesSimilares[i].idiomas.Count - 1;
+                                                                var idiomas = "";
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[j] + " - ";
+                                                                    @idiomas
+                                                                }
+                                                                if (cantidad >= 0)
+                                                                {
+                                                                    idiomas = ViewBag.perfilesSimilares[i].idiomas[cantidad];
+                                                                    @idiomas
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @{
+                                                                cantidad = ViewBag.perfilesSimilares[i].habilidades.Count - 1;
+                                                                var habilidades = "";
+                                                                for (int j = 0; j < cantidad; ++j)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[j] + " - ";
+                                                                    @habilidades
+                                                                }
+                                                                if (cantidad >= 0)
+                                                                {
+                                                                    habilidades = ViewBag.perfilesSimilares[i].habilidades[cantidad];
+                                                                    @habilidades
+                                                                }
+                                                            }
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="carousel-control-prev" href="#carouselPerfilesSimilares" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselPerfilesSimilares" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+
+                        </div>
+                        <div class="tab-pane fade" id="habilidades-similares" role="tabpanel" aria-labelledby="habilidades-similares-tab">
+
+                            <div id="carouselHabilidades" class="carousel slide" data-ride="false" data-wrap="false">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = 0; i < ViewBag.cantPerfiles / 3; ++i)
+                                            {
+                                                <div class="card" style="width: 20%;">
+                                                    <div class="d-flex">
+                                                        <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesHabilidades[i].nombre </h4>
+                                                        <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesHabilidades[i].correo) })">
+                                                            <i class="p-2 fas fa-sign-in-alt fa-lg  color-pallete6 mb-2"></i>
+                                                        </a>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">@ViewBag.perfilesHabilidades[i].correo</p>
+                                                    </div>
+                                                    @for(int j = 0; j < ViewBag.perfilesHabilidades[i].habilidades.Count && j < 3; ++j )
+                                                    {
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                                <p class="col info-perfil">
+                                                                    @ViewBag.perfilesHabilidades[i].habilidades[j]
+                                                                </p>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = ViewBag.cantPerfiles / 3; i < ViewBag.cantPerfiles*2 / 3; ++i)
+                                            {
+                                            <div class="card" style="width: 20%;">
+                                                <div class="d-flex">
+                                                    <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesHabilidades[i].nombre </h4>
+                                                    <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesHabilidades[i].correo) })">
+                                                        <i class="p-2 fas fa-sign-in-alt fa-lg  color-pallete6 mb-2"></i>
+                                                    </a>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                    <p class="col info-perfil">@ViewBag.perfilesHabilidades[i].correo</p>
+                                                </div>
+                                                @for (int j = 0; j < ViewBag.perfilesHabilidades[i].habilidades.Count && j < 3; ++j)
+                                                {
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @ViewBag.perfilesHabilidades[i].habilidades[j]
+                                                        </p>
+                                                    </div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="flex flex-row justify-content-between">
+                                            @for (var i = ViewBag.cantPerfiles * 2 / 3; i < ViewBag.cantPerfiles; ++i)
+                                            {
+                                            <div class="card" style="width: 20%;">
+                                                <div class="d-flex">
+                                                    <h4 class="p-2 flex-fill info-perfil">@ViewBag.perfilesHabilidades[i].nombre </h4>
+                                                    <a href="@Url.Action("verMiembro", "Miembro", new { correo = Tokenizador.TokenizarHilera(@ViewBag.perfilesHabilidades[i].correo) })">
+                                                        <i class="p-2 fas fa-sign-in-alt fa-lg  color-pallete6 mb-2"></i>
+                                                    </a>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <i class="col-sm-1 fas fa-envelope fa-lg color-pallete6 mr-3"></i>
+                                                    <p class="col info-perfil">@ViewBag.perfilesHabilidades[i].correo</p>
+                                                </div>
+                                                @for (int j = 0; j < ViewBag.perfilesHabilidades[i].habilidades.Count && j < 3; ++j)
+                                                {
+                                                    <div class="row">
+                                                        <i class="col-sm-1 fas fa-brain fa-lg color-pallete6 mr-3"></i>
+                                                        <p class="col info-perfil">
+                                                            @ViewBag.perfilesHabilidades[i].habilidades[j]
+                                                        </p>
+                                                    </div>
+                                                }
+                                            </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <a class="carousel-control-prev" href="#carouselHabilidades" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true" ></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselHabilidades" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- ./Tabs -->
+
+    <script>
+        var checkitem = function (carousel) {
+            var $this;
+            $this = $(carousel.data.id);
+            if ($(carousel.data.id +  " .carousel-inner .carousel-item:first").hasClass("active")) {
+                $this.children(".carousel-control-prev").hide();
+                $this.children(".carousel-control-next").show();
+            } else if ($(carousel.data.id + " .carousel-inner .carousel-item:last").hasClass("active")) {
+                $this.children(".carousel-control-next").hide();
+                $this.children(".carousel-control-prev").show();
+            } else {
+                $this.children(".carousel-control-next").show();
+                $this.children(".carousel-control-prev").show();
+            }
+        };
+
+    $("#carouselPerfilesSimilares").on("slid.bs.carousel", { id: "#carouselPerfilesSimilares" }, checkitem);
+    $("#carouselHabilidades").on("slid.bs.carousel", { id: "#carouselHabilidades" }, checkitem);
+
+    $(document).ready(function () {
+        $this = $("#carouselPerfilesSimilares");
+        $this.children(".carousel-control-prev").hide();
+        $this = $("#carouselHabilidades");
+        $this.children(".carousel-control-prev").hide();
+    });
+    </script>
+</body>
+</html>

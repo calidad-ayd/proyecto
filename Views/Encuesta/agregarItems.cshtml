@@ -1,0 +1,73 @@
+﻿@model ComunidadPractica.Models.EncuestaModel
+@{ ViewBag.Title = "Construir una Encuesta"; }
+
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container center">
+		<div class="flex-row">
+			<div class="col-lg-8 mx-auto text-left">
+				<h1>@ViewBag.Title</h1>
+				<h4>@Model.titulo</h4>
+				@using (Html.BeginForm("agregarItems", "Encuesta", null, FormMethod.Post, new {enctype="multipart/form-data"}))
+				{
+					<div>@ViewBag.Message</div>
+					<div class="text-danger">@ViewBag.Error</div>
+					<br>
+					<input type="hidden" name="encuesta" value="@Model.id">
+					<input name="enunciado" type="text" class="form-control-lg col-lg-6" placeholder="Enunciado nuevo"  style="max-width:100%">
+					<br><br>
+					<input type="submit" class="btn btn-dark" value="Agregar Enunciado" />
+				}
+				<br><br>
+				<a class="btn btn-dark" href="@Url.Action("compartirEncuesta", "Encuesta")?encuestaID=@Model.id">Compartir Encuesta</a>
+				@using (Html.BeginForm("eliminarEncuesta", "Encuesta", new { encuestaID = @Model.id }, FormMethod.Post,
+					new { style = "display: inline-block;" }))
+				{
+					<input class="btn btn-danger" type="submit" value="Eliminar Encuesta" />
+				}
+				<hr>
+				@if (Model.items.Count == 0)
+				{
+					<h6>No hay enunciados todavia</h6>
+				}
+				else
+				{
+					<h5>Enunciados</h5>
+				}
+				@foreach (var item in Model.items)
+				{
+					<div class="card cardMod">
+						<div class="row">
+							<div class="col-lg-7">
+								<h6>@item.enunciado</h6>
+							</div>
+							<div class="col text-right">
+								@using (Html.BeginForm("editarItemDeEncuesta", "Encuesta", new { encuestaID = @Model.id, itemID = item.numItem }, FormMethod.Post,
+								new { style = "display: inline-block;" }))
+								{
+									<input class="btn btn-dark" type="submit" value=" Editar " />
+								}
+								@using (Html.BeginForm("eliminarItemDeEncuesta", "Encuesta", new { encuestaID = @Model.id, itemID = item.numItem }, FormMethod.Post,
+								new { style = "display: inline-block;" }))
+								{
+									<input class="btn btn-danger" type="submit" value=" x " />
+								}
+							</div>
+						</div>
+						<br>
+						<ul style="list-style-type: square;">
+							@foreach (var opcion in item.opciones)
+							{
+								<li>@opcion</li>
+							}
+						</ul>
+					</div>
+				}
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

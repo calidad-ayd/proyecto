@@ -1,0 +1,35 @@
+﻿@model ComunidadPractica.Mensaje
+@{
+	ViewBag.Title = "Registro a la comunidad";
+}
+<!doctype html>
+<html lang="en">
+<body>
+	<br><br><br>
+	<div class="container center" style="max-width: 50%; line-height: 2">
+		<h1 style="font-size:2.5vw">@ViewBag.Title</h1>
+        @Html.Partial("Mensaje", Model)
+	</div>
+
+	<div class="container center" style="max-width: 50%; line-height: 2">
+		<div id="agregarMiembroParcial"></div>
+	</div>
+
+	<script>
+        $("#autocompletar").ready(function () {
+            var encActionURL = '@Url.Action("agregarMiembroParcial", "Miembro")';
+            var dataToSend = JSON.stringify({ 'correo': '' });
+            $.ajax({
+                type: "POST",
+                url: encActionURL,
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (vistaParcial) {
+                    $("#agregarMiembroParcial").html(vistaParcial);
+                }
+            });
+        });
+	</script>
+
+</body>
+</html>

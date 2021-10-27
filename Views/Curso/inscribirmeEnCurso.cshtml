@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+
+<br />
+<br />
+<br />
+<div class="container body-content">
+	<br>
+	<h1> @ViewBag.Curso</h1>
+	<br>
+	<script type="text/javascript">
+
+		function verificarCorreo() {
+
+			var correo = $("#correo").val();
+			var curso = "@ViewBag.Curso";
+
+			var regexCorreo = /\S+@@\S+\.\S+/;
+
+			if (correo.length > 0 && regexCorreo.test(correo) ) {
+				$.ajax({
+					async: false,
+					url: '/Curso/inscribirCorreoEnCurso',
+					data: JSON.stringify({ correo: correo, nombreCurso: curso }),
+					contentType: "application/json; charset=utf-8",
+					type: 'POST',
+					success: function (vistaParcial) {
+						$("#formularioInscribirmeParcial").html(vistaParcial);
+						$.validator.unobtrusive.parse("form");
+					},
+					error: function (request) {
+						alert(request.responseText);
+					}
+				});
+			} else {
+				$("#error").text("Debes ingresar un correo válido.");
+			}
+		}
+	</script>
+	<div class="row">
+		<div class="col-12">
+			<div>
+				<label id="error" class="alert-danger"></label>
+				<br>
+				<label>Ingrese su correo electrónico:</label>
+				<br><br>
+				<input name="correo" id="correo" style="display:inline-block; min-width: 55%;" class="form-control form-control-lg" type="text">
+				<br><br>
+				<a class="btn btn-dark" onclick="verificarCorreo()">Inscribirme en este curso</a>
+			</div>
+			<br>
+			<div id="formularioInscribirmeParcial">
+			</div>
+		</div>
+	</div>
+</div>
+
